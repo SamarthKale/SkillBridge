@@ -1,0 +1,61 @@
+com.skillbridge.app-lifecycle-process-2.8.3-0 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\006da4d29cad037ede53116a85fee80e\transformed\lifecycle-process-2.8.3\res
+com.skillbridge.app-navigation-runtime-ktx-2.8.0-1 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\05dc63ff2593b14f686d673a3375686c\transformed\navigation-runtime-ktx-2.8.0\res
+com.skillbridge.app-animation-release-2 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\1d947def0a15df83ce37868b48c55104\transformed\animation-release\res
+com.skillbridge.app-lifecycle-viewmodel-release-3 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\268e132d9f15e04d7fa7e4e099895b10\transformed\lifecycle-viewmodel-release\res
+com.skillbridge.app-startup-runtime-1.1.1-4 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\2925951fcbeb2d6d6e327ad209e3207c\transformed\startup-runtime-1.1.1\res
+com.skillbridge.app-profileinstaller-1.3.1-5 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\3cec9128f6668e026bcfcf3edc14a23c\transformed\profileinstaller-1.3.1\res
+com.skillbridge.app-customview-poolingcontainer-1.0.0-6 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\3d8e798470aeee88d09411f3be1923e2\transformed\customview-poolingcontainer-1.0.0\res
+com.skillbridge.app-ui-release-7 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\3e72812fa13d1f158b47d43bf32f4531\transformed\ui-release\res
+com.skillbridge.app-activity-ktx-1.9.2-8 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\46044574e78b211c66fb0d3fa852c47b\transformed\activity-ktx-1.9.2\res
+com.skillbridge.app-ui-util-release-9 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\4e25ecefa4259e0d76999005d9ce75ae\transformed\ui-util-release\res
+com.skillbridge.app-emoji2-1.3.0-10 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\588bb4bae317b2e0f10df7bab22be124\transformed\emoji2-1.3.0\res
+com.skillbridge.app-annotation-experimental-1.4.1-11 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\5b1a99f458c55a57161f205d14d67d47\transformed\annotation-experimental-1.4.1\res
+com.skillbridge.app-foundation-layout-release-12 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\6119ff0fbd85b89b91560b52a48fa6d1\transformed\foundation-layout-release\res
+com.skillbridge.app-navigation-common-ktx-2.8.0-13 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\624a97696af461cf47ef0ac9641879ae\transformed\navigation-common-ktx-2.8.0\res
+com.skillbridge.app-core-common-2.0.3-14 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\62aa0a7c8d50763bf00f2d2f596e32eb\transformed\core-common-2.0.3\res
+com.skillbridge.app-foundation-release-15 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\62d4fc62621485a938e1548889e2c309\transformed\foundation-release\res
+com.skillbridge.app-core-1.13.1-16 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\6b6795e99a37e21d79d71597b2f8c86c\transformed\core-1.13.1\res
+com.skillbridge.app-navigation-compose-2.8.0-17 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\70744066519e0540d78df269e26783c6\transformed\navigation-compose-2.8.0\res
+com.skillbridge.app-play-services-base-18.0.1-18 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\787a729f1f7ff9388550e7d13f6a70ee\transformed\play-services-base-18.0.1\res
+com.skillbridge.app-core-ktx-1.13.1-19 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\7b902771ac3e83ff0b565475c6b63dca\transformed\core-ktx-1.13.1\res
+com.skillbridge.app-credentials-play-services-auth-1.2.0-rc01-20 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\7fd521e2c424cec43a17eed87fdfbc41\transformed\credentials-play-services-auth-1.2.0-rc01\res
+com.skillbridge.app-activity-1.9.2-21 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\82715f06c8d120383a93ca65fb1ab3a5\transformed\activity-1.9.2\res
+com.skillbridge.app-ui-text-release-22 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\87234c46bb8801e6282a1ffed86cd52f\transformed\ui-text-release\res
+com.skillbridge.app-play-services-basement-18.4.0-23 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\87e1c05e616e27b24744dbdd8a78b695\transformed\play-services-basement-18.4.0\res
+com.skillbridge.app-material3-release-24 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\884c6bd4438bc2886afe1b870ab67368\transformed\material3-release\res
+com.skillbridge.app-firebase-common-21.0.0-25 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\8e07fdd27f6f91c9b27cc528ade4ecc0\transformed\firebase-common-21.0.0\res
+com.skillbridge.app-lifecycle-runtime-compose-release-26 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\9ae2a591778a68ebd58c48bbed7e36e6\transformed\lifecycle-runtime-compose-release\res
+com.skillbridge.app-lifecycle-livedata-core-2.8.3-27 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\9c47a22de2ee11f6b6ce40f2460e4096\transformed\lifecycle-livedata-core-2.8.3\res
+com.skillbridge.app-lifecycle-viewmodel-savedstate-2.8.3-28 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\a3f5b1ca68e1bf3670c0f5b27cb98096\transformed\lifecycle-viewmodel-savedstate-2.8.3\res
+com.skillbridge.app-ui-geometry-release-29 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\aa072284386b2eec9bb3bf23e4f3462c\transformed\ui-geometry-release\res
+com.skillbridge.app-activity-compose-1.9.2-30 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\ac4711051e22e55b8ce5e0f7e9830ec3\transformed\activity-compose-1.9.2\res
+com.skillbridge.app-material-icons-core-release-31 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\ae76bb9eaee003c8f702c1b6325d8473\transformed\material-icons-core-release\res
+com.skillbridge.app-core-runtime-2.2.0-32 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\af0f0e1da896431c3d3a502886f01719\transformed\core-runtime-2.2.0\res
+com.skillbridge.app-lifecycle-viewmodel-compose-release-33 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\b71e3be4e25248b0013e0b6f01a1f998\transformed\lifecycle-viewmodel-compose-release\res
+com.skillbridge.app-browser-1.4.0-34 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\b9277bdbdef442a393fdad602ff7afe0\transformed\browser-1.4.0\res
+com.skillbridge.app-credentials-1.2.0-rc01-35 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\c32c3134ad71ec388d2e8bae38fb39be\transformed\credentials-1.2.0-rc01\res
+com.skillbridge.app-ui-unit-release-36 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\c464d6951358809567715059dc01fc55\transformed\ui-unit-release\res
+com.skillbridge.app-navigation-common-2.8.0-37 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\c71546cc5ef57794853bd772eece21eb\transformed\navigation-common-2.8.0\res
+com.skillbridge.app-lifecycle-runtime-ktx-release-38 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\cf2f9125ee9cef7aff36915e4c31a26b\transformed\lifecycle-runtime-ktx-release\res
+com.skillbridge.app-animation-core-release-39 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\d2f811b84c0fb31ce5cc61ecb56ad02c\transformed\animation-core-release\res
+com.skillbridge.app-lifecycle-viewmodel-ktx-2.8.3-40 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\d489e403f734744f0591ae8461336cc2\transformed\lifecycle-viewmodel-ktx-2.8.3\res
+com.skillbridge.app-material-ripple-release-41 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\dd8c99bfffa9367cf029bdffadb4377d\transformed\material-ripple-release\res
+com.skillbridge.app-savedstate-ktx-1.2.1-42 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\e22d989263cc77f09c87c1536b11846d\transformed\savedstate-ktx-1.2.1\res
+com.skillbridge.app-lifecycle-livedata-2.8.3-43 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\e23942423143e3f3d55934a75fccac5d\transformed\lifecycle-livedata-2.8.3\res
+com.skillbridge.app-ui-graphics-release-44 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\eca9bfef097b8dd73b0035b56aa1f207\transformed\ui-graphics-release\res
+com.skillbridge.app-play-services-auth-20.7.0-45 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\f1c3ee9aa053b8dc43663100f6431141\transformed\play-services-auth-20.7.0\res
+com.skillbridge.app-runtime-saveable-release-46 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\f3a3969364cad731d6cfa957e0a68c6a\transformed\runtime-saveable-release\res
+com.skillbridge.app-savedstate-1.2.1-47 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\f808d8a914e9a58ff4be7632b72b16a5\transformed\savedstate-1.2.1\res
+com.skillbridge.app-graphics-path-1.0.1-48 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\f8259665b8558cae79505acfc53eab5c\transformed\graphics-path-1.0.1\res
+com.skillbridge.app-navigation-runtime-2.8.0-49 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\f924d406a3b995e90695188826b92132\transformed\navigation-runtime-2.8.0\res
+com.skillbridge.app-runtime-release-50 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\f94d25bf931d2caa2b0354003b43b840\transformed\runtime-release\res
+com.skillbridge.app-lifecycle-runtime-release-51 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\f9dcb283a54b88789064ee763da8bd28\transformed\lifecycle-runtime-release\res
+com.skillbridge.app-lifecycle-livedata-core-ktx-2.8.3-52 C:\Users\Samarth Kale\.gradle\caches\8.9\transforms\ff8431403dc2c4b9703b81505052ddf3\transformed\lifecycle-livedata-core-ktx-2.8.3\res
+com.skillbridge.app-pngs-53 C:\abhi-pro\app\build\generated\res\pngs\debug
+com.skillbridge.app-res-54 C:\abhi-pro\app\build\generated\res\processDebugGoogleServices
+com.skillbridge.app-resValues-55 C:\abhi-pro\app\build\generated\res\resValues\debug
+com.skillbridge.app-packageDebugResources-56 C:\abhi-pro\app\build\intermediates\incremental\debug\packageDebugResources\merged.dir
+com.skillbridge.app-packageDebugResources-57 C:\abhi-pro\app\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
+com.skillbridge.app-debug-58 C:\abhi-pro\app\build\intermediates\merged_res\debug\mergeDebugResources
+com.skillbridge.app-debug-59 C:\abhi-pro\app\src\debug\res
+com.skillbridge.app-main-60 C:\abhi-pro\app\src\main\res

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ic_launcher_background">#111111</color>
+    <string name="app_name">SkillBridge</string>
+    <string name="gcm_defaultSenderId" translatable="false">620276163516</string>
+    <string name="google_api_key" translatable="false">AIzaSyDJYBGoKnb9ETiRnbCc_U-1DsRjtbjEWHs</string>
+    <string name="google_app_id" translatable="false">1:620276163516:android:77845b3bf598cea6b3c1b9</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyDJYBGoKnb9ETiRnbCc_U-1DsRjtbjEWHs</string>
+    <string name="google_storage_bucket" translatable="false">freelancing-fcc16.firebasestorage.app</string>
+    <string name="project_id" translatable="false">freelancing-fcc16</string>
+    <style name="Theme.SkillBridge" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">#FFFFFFFF</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>

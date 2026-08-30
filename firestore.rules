@@ -1,0 +1,80 @@
+rules_version = '2';
+
+// ===============================================================
+// Assumed Data Model  (PROTOTYPE — review before public launch)
+// ===============================================================
+//
+// Collection: projects
+// Document ID: auto-generated
+// Fields:
+//   - userId:      string  (required, immutable) = owner's Firebase Auth uid
+//   - projectName: string  (required, 1..100 chars)
+//   - clientName:  string  (required, 1..100 chars)
+//   - description: string  (optional, 0..2000 chars)
+//   - budget:      string  (optional, 0..50 chars)   e.g. "1500"
+//   - dueDate:     string  (optional, 0..20 chars)   e.g. "2026-09-15"
+//   - status:      string  (required, one of: "Pending" | "In Progress" | "Completed")
+//   - createdAt:   number  (required, immutable) epoch millis
+//
+// Access: a project is fully private to its owner. No public reads.
+// ===============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---- Helpers ------------------------------------------------
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    function isOwner(uid) {
+      return isAuthenticated() && request.auth.uid == uid;
+    }
+    function validStr(field, minLen, maxLen) {
+      return request.resource.data[field] is string
+        && request.resource.data[field].size() >= minLen
+        && request.resource.data[field].size() <= maxLen;
+    }
+    function isValidStatus() {
+      return request.resource.data.status in ['Pending', 'In Progress', 'Completed'];
+    }
+
+    // Full field + type + size validation. Used on BOTH create and update.
+    function isValidProject() {
+      return request.resource.data.keys().hasOnly(
+               ['userId', 'projectName', 'clientName', 'description',
+                'budget', 'dueDate', 'status', 'createdAt'])
+        && request.resource.data.keys().hasAll(
+               ['userId', 'projectName', 'clientName', 'status', 'createdAt'])
+        && request.resource.data.userId == request.auth.uid
+        && validStr('projectName', 1, 100)
+        && validStr('clientName', 1, 100)
+        && validStr('description', 0, 2000)
+        && validStr('budget', 0, 50)
+        && validStr('dueDate', 0, 20)
+        && isValidStatus()
+        && request.resource.data.createdAt is number;
+    }
+
+    // ---- projects --------------------------------------------
+    match /projects/{projectId} {
+      // Private to the owner (covers both single get and list queries,
+      // because the app always queries where("userId", "==", uid)).
+      allow read: if isAuthenticated() && isOwner(resource.data.userId);
+
+      allow create: if isAuthenticated()
+        && isOwner(request.resource.data.userId)
+        && isValidProject();
+
+      allow update: if isAuthenticated()
+        && isOwner(resource.data.userId)
+        && isValidProject()
+        // userId and createdAt can never change.
+        && request.resource.data.userId == resource.data.userId
+        && request.resource.data.createdAt == resource.data.createdAt;
+
+      allow delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+
+    // Everything else is denied by default.
+  }
+}

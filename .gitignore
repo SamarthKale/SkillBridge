@@ -1,0 +1,18 @@
+*.iml
+.gradle/
+/local.properties
+/.idea
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Firebase config is per-developer — do not commit it
+/app/google-services.json
+
+# Firebase CLI
+.firebase/
+firebase-debug.log
+firestore-debug.log
