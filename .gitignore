@@ -1,13 +1,16 @@
 *.iml
 .gradle/
-/local.properties
-/.idea
+.idea/
 .DS_Store
-/build
-/captures
+captures/
 .externalNativeBuild
 .cxx
 local.properties
+
+# Build output (root and every module)
+build/
+/build
+/app/build
 
 # Firebase config is per-developer — do not commit it
 /app/google-services.json
@@ -16,3 +19,7 @@ local.properties
 .firebase/
 firebase-debug.log
 firestore-debug.log
+
+# Python
+__pycache__/
+*.pyc
