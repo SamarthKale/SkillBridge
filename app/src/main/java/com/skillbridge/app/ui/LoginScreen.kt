@@ -1,5 +1,6 @@
 package com.skillbridge.app.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +23,7 @@ import com.skillbridge.app.ui.components.AppTextField
 import com.skillbridge.app.ui.components.ErrorText
 import com.skillbridge.app.ui.components.PrimaryButton
 import com.skillbridge.app.ui.components.SecondaryButton
+import com.skillbridge.app.ui.theme.Accent
 import com.skillbridge.app.ui.theme.Mute
 
 @Composable
@@ -31,7 +33,7 @@ fun LoginScreen(
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var error by remember { mutableStateOf<String?>(null) }
+    var message by remember { mutableStateOf<String?>(null) }
     var loading by remember { mutableStateOf(false) }
 
     Column(
@@ -42,43 +44,39 @@ fun LoginScreen(
         verticalArrangement = Arrangement.spacedBy(14.dp, Alignment.CenterVertically)
     ) {
         Text("SkillBridge", style = MaterialTheme.typography.titleLarge)
-        Text("Freelance projects for college students", style = MaterialTheme.typography.bodyMedium, color = Mute)
+        Text("Log in to find your next opportunity.", style = MaterialTheme.typography.bodyMedium, color = Mute)
 
-        AppTextField(
-            value = email,
-            onValueChange = { email = it; error = null },
-            label = "Email",
-            keyboardType = KeyboardType.Email
-        )
-        AppTextField(
-            value = password,
-            onValueChange = { password = it; error = null },
-            label = "Password",
-            isPassword = true
+        AppTextField(email, { email = it; message = null }, "Email", keyboardType = KeyboardType.Email)
+        AppTextField(password, { password = it; message = null }, "Password", isPassword = true)
+
+        Text(
+            "Forgot Password?",
+            style = MaterialTheme.typography.labelMedium,
+            color = Accent,
+            modifier = Modifier.clickable {
+                AuthManager.sendPasswordReset(email) { err ->
+                    message = err ?: "Password reset email sent to $email."
+                }
+            }
         )
 
-        ErrorText(error)
+        ErrorText(message)
 
         PrimaryButton(
             text = "Login",
             loading = loading,
             onClick = {
-                when {
-                    email.isBlank() || password.isBlank() -> error = "Please fill in both fields."
-                    else -> {
-                        loading = true
-                        AuthManager.login(email, password) { err ->
-                            loading = false
-                            if (err == null) onLoggedIn() else error = err
-                        }
+                if (email.isBlank() || password.isBlank()) {
+                    message = "Please fill in both fields."
+                } else {
+                    loading = true
+                    AuthManager.login(email, password) { err ->
+                        loading = false
+                        if (err == null) onLoggedIn() else message = err
                     }
                 }
             }
         )
-        SecondaryButton(
-            text = "Create Account",
-            enabled = !loading,
-            onClick = onCreateAccount
-        )
+        SecondaryButton(text = "Sign Up", enabled = !loading, onClick = onCreateAccount)
     }
 }

@@ -1,21 +1,17 @@
 package com.skillbridge.app.ui
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -23,134 +19,88 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.skillbridge.app.data.Project
-import com.skillbridge.app.data.ProjectRepository
-import com.skillbridge.app.data.Status
+import com.skillbridge.app.auth.AuthManager
+import com.skillbridge.app.data.Opportunity
+import com.skillbridge.app.data.Repo
+import com.skillbridge.app.ui.components.LabeledValue
 import com.skillbridge.app.ui.components.PrimaryButton
 import com.skillbridge.app.ui.components.ScreenScaffold
-import com.skillbridge.app.ui.components.SecondaryButton
-import com.skillbridge.app.ui.theme.Line
+import com.skillbridge.app.ui.components.SectionHeader
+import com.skillbridge.app.ui.components.SkillChips
+import com.skillbridge.app.ui.components.formatDate
 import com.skillbridge.app.ui.theme.Mute
-import com.skillbridge.app.ui.theme.Paper
 
 @Composable
 fun ProjectDetailsScreen(
-    projectId: String,
+    opportunityId: String,
     onBack: () -> Unit,
-    onEdit: (String) -> Unit,
-    onDeleted: () -> Unit
+    onApply: () -> Unit
 ) {
-    var project by remember { mutableStateOf<Project?>(null) }
+    var opp by remember { mutableStateOf<Opportunity?>(null) }
     var loading by remember { mutableStateOf(true) }
-    var busy by remember { mutableStateOf(false) }
-    var actionError by remember { mutableStateOf<String?>(null) }
-    var showDeleteDialog by remember { mutableStateOf(false) }
+    var alreadyApplied by remember { mutableStateOf(false) }
 
-    fun reload() {
-        ProjectRepository.getProject(projectId) { p ->
-            project = p
-            loading = false
-        }
+    LaunchedEffect(opportunityId) {
+        Repo.getOpportunity(opportunityId) { opp = it; loading = false }
+        Repo.getApplication(Repo.applicationId(AuthManager.uid(), opportunityId)) { alreadyApplied = it != null }
     }
 
-    LaunchedEffect(projectId) { reload() }
-
     ScreenScaffold(title = "Project Details", onBack = onBack) { padding ->
-        val p = project
+        val o = opp
         when {
-            loading -> Text(
-                "Loading…",
-                style = MaterialTheme.typography.bodyMedium,
-                color = Mute,
-                modifier = Modifier.padding(padding).padding(20.dp)
-            )
-
-            p == null -> Text(
-                "Project not found.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = Mute,
-                modifier = Modifier.padding(padding).padding(20.dp)
-            )
-
+            loading -> Text("Loading...", color = Mute, modifier = Modifier.padding(padding).padding(20.dp))
+            o == null -> Text("Project not found.", color = Mute, modifier = Modifier.padding(padding).padding(20.dp))
             else -> Column(
                 modifier = Modifier
+                    .fillMaxSize()
                     .padding(padding)
                     .verticalScroll(rememberScrollState())
                     .padding(20.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-                Card(
-                    shape = RoundedCornerShape(8.dp),
-                    colors = CardDefaults.cardColors(containerColor = Paper),
-                    border = BorderStroke(1.dp, Line),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        DetailField("Project name", p.projectName)
-                        DetailField("Client name", p.clientName.ifBlank { "-" })
-                        DetailField("Description", p.description.ifBlank { "-" })
-                        DetailField("Budget", p.budget.ifBlank { "-" })
-                        DetailField("Due date", p.dueDate.ifBlank { "-" })
-                        DetailField("Status", p.status)
-                    }
+                Text(o.title, style = MaterialTheme.typography.titleLarge)
+                Text(o.company, style = MaterialTheme.typography.bodyMedium, color = Mute)
+
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+                    LabeledValue("Budget", o.budget, Modifier.weight(1f))
+                    LabeledValue("Deadline", o.deadline, Modifier.weight(1f))
+                }
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+                    LabeledValue("Location", if (o.remote) "Remote" else o.location.ifBlank { "On-site" }, Modifier.weight(1f))
+                    LabeledValue("Experience", o.experienceRequired, Modifier.weight(1f))
                 }
 
-                actionError?.let {
-                    Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error)
-                }
+                Spacer(Modifier.height(2.dp))
+                SectionHeader("Required Skills")
+                SkillChips(o.skills)
 
-                if (p.status != Status.COMPLETED) {
-                    PrimaryButton(
-                        text = "Mark Completed",
-                        loading = busy,
-                        onClick = {
-                            busy = true
-                            actionError = null
-                            ProjectRepository.setStatus(projectId, Status.COMPLETED) { ok ->
-                                busy = false
-                                if (ok) reload() else actionError = "Could not update status."
-                            }
-                        }
-                    )
-                }
-                SecondaryButton(text = "Edit", onClick = { onEdit(projectId) })
-                SecondaryButton(text = "Delete", onClick = { showDeleteDialog = true })
+                Section("Description", o.description)
+                Section("Responsibilities", o.responsibilities)
+                Section("Requirements", o.requirements)
+
+                Text("Posted ${formatDate(o.postedAt)}", style = MaterialTheme.typography.labelMedium, color = Mute)
+
                 Spacer(Modifier.height(4.dp))
+                PrimaryButton(
+                    text = if (alreadyApplied) "Already Applied" else "Apply for Project",
+                    enabled = !alreadyApplied,
+                    onClick = onApply
+                )
+                Spacer(Modifier.height(8.dp))
             }
         }
-    }
-
-    if (showDeleteDialog) {
-        AlertDialog(
-            onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Delete project?") },
-            text = { Text("This project will be permanently removed from Firestore.") },
-            confirmButton = {
-                TextButton(onClick = {
-                    showDeleteDialog = false
-                    busy = true
-                    actionError = null
-                    ProjectRepository.deleteProject(projectId) { ok ->
-                        busy = false
-                        if (ok) onDeleted() else actionError = "Could not delete the project."
-                    }
-                }) { Text("Delete") }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDeleteDialog = false }) { Text("Cancel") }
-            }
-        )
     }
 }
 
 @Composable
-private fun DetailField(label: String, value: String) {
+private fun Section(title: String, body: String) {
+    if (body.isBlank()) return
     Column {
-        Text(label, style = MaterialTheme.typography.labelMedium, color = Mute)
-        Text(value, style = MaterialTheme.typography.bodyLarge)
+        SectionHeader(title)
+        Spacer(Modifier.height(4.dp))
+        Text(body.replace(" | ", "\n• ").let { if (it.contains("\n•")) "• $it" else it },
+            style = MaterialTheme.typography.bodyMedium)
     }
 }

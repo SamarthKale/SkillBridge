@@ -1,87 +1,113 @@
 package com.skillbridge.app.ui
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.skillbridge.app.auth.AuthManager
+import com.skillbridge.app.ui.components.Avatar
+import com.skillbridge.app.ui.components.LabeledValue
+import com.skillbridge.app.ui.components.OutlinedCardBox
 import com.skillbridge.app.ui.components.PrimaryButton
 import com.skillbridge.app.ui.components.ScreenScaffold
-import com.skillbridge.app.ui.theme.Line
+import com.skillbridge.app.ui.components.SecondaryButton
+import com.skillbridge.app.ui.components.SectionHeader
+import com.skillbridge.app.ui.components.SkillChips
+import com.skillbridge.app.ui.components.rememberMyProfile
 import com.skillbridge.app.ui.theme.Mute
-import com.skillbridge.app.ui.theme.Paper
 
 @Composable
 fun ProfileScreen(
-    onBack: () -> Unit,
+    onEditProfile: () -> Unit,
     onLoggedOut: () -> Unit
 ) {
-    var showLogoutDialog by remember { mutableStateOf(false) }
+    val profile by rememberMyProfile()
+    var confirmLogout by remember { mutableStateOf(false) }
 
-    ScreenScaffold(title = "Profile", onBack = onBack) { padding ->
+    ScreenScaffold(title = "Profile") { padding ->
         Column(
             modifier = Modifier
+                .fillMaxSize()
                 .padding(padding)
+                .verticalScroll(rememberScrollState())
                 .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            Card(
-                shape = RoundedCornerShape(8.dp),
-                colors = CardDefaults.cardColors(containerColor = Paper),
-                border = BorderStroke(1.dp, Line),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Field("Name", AuthManager.displayName())
-                    Field("Email", AuthManager.email().ifBlank { "-" })
+            val name = profile?.name ?: AuthManager.displayName()
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Avatar(name, size = 60)
+                Spacer(Modifier.width(14.dp))
+                Column {
+                    Text(name, style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        listOfNotNull(
+                            profile?.role?.replaceFirstChar { it.uppercase() },
+                            profile?.branch?.ifBlank { null }
+                        ).joinToString(" · "),
+                        style = MaterialTheme.typography.labelMedium, color = Mute
+                    )
+                    Text(AuthManager.email(), style = MaterialTheme.typography.labelMedium, color = Mute)
                 }
             }
 
-            PrimaryButton(text = "Logout", onClick = { showLogoutDialog = true })
+            SectionHeader("Skills")
+            SkillChips(profile?.skills ?: emptyList())
+
+            SectionHeader("Education")
+            OutlinedCardBox {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    LabeledValue("Degree", profile?.degree ?: "-")
+                    LabeledValue("College", profile?.college ?: "-")
+                    LabeledValue("Branch", profile?.branch ?: "-")
+                    LabeledValue(
+                        "Graduation Year",
+                        profile?.graduationYear?.takeIf { it > 0 }?.toString() ?: "-"
+                    )
+                }
+            }
+
+            SectionHeader("Experience")
+            Text(profile?.experience?.ifBlank { "-" } ?: "-", style = MaterialTheme.typography.bodyMedium)
+
+            SectionHeader("About")
+            Text(profile?.bio?.ifBlank { "-" } ?: "-", style = MaterialTheme.typography.bodyMedium)
+
+            SectionHeader("Resume")
+            Text(profile?.resumeUrl?.ifBlank { "No resume link added." } ?: "-",
+                style = MaterialTheme.typography.bodyMedium, color = Mute)
+
+            Spacer(Modifier.height(6.dp))
+            PrimaryButton("Edit Profile", onClick = onEditProfile)
+            SecondaryButton("Logout", onClick = { confirmLogout = true })
+            Spacer(Modifier.height(12.dp))
         }
     }
 
-    if (showLogoutDialog) {
+    if (confirmLogout) {
         AlertDialog(
-            onDismissRequest = { showLogoutDialog = false },
+            onDismissRequest = { confirmLogout = false },
             title = { Text("Logout?") },
-            text = { Text("You will need to sign in again to see your projects.") },
-            confirmButton = {
-                TextButton(onClick = {
-                    showLogoutDialog = false
-                    AuthManager.logout()
-                    onLoggedOut()
-                }) { Text("Logout") }
-            },
-            dismissButton = {
-                TextButton(onClick = { showLogoutDialog = false }) { Text("Cancel") }
-            }
+            text = { Text("You will need to sign in again.") },
+            confirmButton = { TextButton(onClick = { confirmLogout = false; onLoggedOut() }) { Text("Logout") } },
+            dismissButton = { TextButton(onClick = { confirmLogout = false }) { Text("Cancel") } }
         )
-    }
-}
-
-@Composable
-private fun Field(label: String, value: String) {
-    Column {
-        Text(label, style = MaterialTheme.typography.labelMedium, color = Mute)
-        Text(value, style = MaterialTheme.typography.bodyLarge)
     }
 }

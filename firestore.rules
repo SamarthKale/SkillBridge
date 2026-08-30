@@ -1,80 +1,113 @@
 rules_version = '2';
 
 // ===============================================================
-// Assumed Data Model  (PROTOTYPE — review before public launch)
+// SkillBridge - Firestore Security Rules  (PROTOTYPE - review before public launch)
 // ===============================================================
 //
-// Collection: projects
-// Document ID: auto-generated
-// Fields:
-//   - userId:      string  (required, immutable) = owner's Firebase Auth uid
-//   - projectName: string  (required, 1..100 chars)
-//   - clientName:  string  (required, 1..100 chars)
-//   - description: string  (optional, 0..2000 chars)
-//   - budget:      string  (optional, 0..50 chars)   e.g. "1500"
-//   - dueDate:     string  (optional, 0..20 chars)   e.g. "2026-09-15"
-//   - status:      string  (required, one of: "Pending" | "In Progress" | "Completed")
-//   - createdAt:   number  (required, immutable) epoch millis
+// Collections
+// -----------
+// projects/{id}         Client-posted opportunities that students browse & apply to.
+//   title, company, category, budget, location, remote(bool), skills[],
+//   description, responsibilities, requirements, experienceRequired,
+//   deadline, postedByUid, postedByName, postedAt(number)
+//   -> Readable by any signed-in user. Writable only by the poster
+//      (seed data has postedByUid == "" and is admin-written, bypassing rules).
 //
-// Access: a project is fully private to its owner. No public reads.
+// profiles/{uid}        One per user. Owned by that uid.
+//   uid, role("student"|"client"), name, email, phone, location, photoUrl,
+//   degree, college, branch, graduationYear(number), skills[],
+//   experience, bio, resumeUrl, createdAt, updatedAt
+//   -> Any signed-in user may read a profile (needed to show an applicant to
+//      a client). Only the owner may create / update / delete it.
+//
+// applications/{appId}  appId == "<studentUid>_<projectId>"  (guarantees one per pair)
+//   projectId, projectTitle, company, budget, studentUid, studentName,
+//   intro, resumeUrl, status, appliedAt(number)
+//   status in Applied|Under Review|Shortlisted|Accepted|Rejected
+//   -> The student owns their applications. They create/read/delete;
+//      status transitions are normally a client/admin action, but for this
+//      mini-project the owner may also update non-status fields.
+//
+// messages/{id}         Flat chat messages tied to an application thread.
+//   applicationId, projectTitle, company, studentUid, clientName,
+//   fromClient(bool), text, sentAt(number)
+//   -> Read/write limited to the student on that thread (studentUid).
+//
+// notifications/{id}    Lightweight per-user notifications.
+//   uid, type, text, createdAt(number), read(bool)
+//   -> Owner may read; owner may update only the `read` flag; no client create
+//      (seed/admin only).
 // ===============================================================
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ---- Helpers ------------------------------------------------
-    function isAuthenticated() {
+    function authed() {
       return request.auth != null;
     }
     function isOwner(uid) {
-      return isAuthenticated() && request.auth.uid == uid;
+      return authed() && request.auth.uid == uid;
     }
-    function validStr(field, minLen, maxLen) {
-      return request.resource.data[field] is string
-        && request.resource.data[field].size() >= minLen
-        && request.resource.data[field].size() <= maxLen;
-    }
-    function isValidStatus() {
-      return request.resource.data.status in ['Pending', 'In Progress', 'Completed'];
+    function unchanged(field) {
+      return request.resource.data[field] == resource.data[field];
     }
 
-    // Full field + type + size validation. Used on BOTH create and update.
-    function isValidProject() {
-      return request.resource.data.keys().hasOnly(
-               ['userId', 'projectName', 'clientName', 'description',
-                'budget', 'dueDate', 'status', 'createdAt'])
-        && request.resource.data.keys().hasAll(
-               ['userId', 'projectName', 'clientName', 'status', 'createdAt'])
-        && request.resource.data.userId == request.auth.uid
-        && validStr('projectName', 1, 100)
-        && validStr('clientName', 1, 100)
-        && validStr('description', 0, 2000)
-        && validStr('budget', 0, 50)
-        && validStr('dueDate', 0, 20)
-        && isValidStatus()
-        && request.resource.data.createdAt is number;
-    }
-
-    // ---- projects --------------------------------------------
+    // ---- Opportunities -------------------------------------------------
     match /projects/{projectId} {
-      // Private to the owner (covers both single get and list queries,
-      // because the app always queries where("userId", "==", uid)).
-      allow read: if isAuthenticated() && isOwner(resource.data.userId);
-
-      allow create: if isAuthenticated()
-        && isOwner(request.resource.data.userId)
-        && isValidProject();
-
-      allow update: if isAuthenticated()
-        && isOwner(resource.data.userId)
-        && isValidProject()
-        // userId and createdAt can never change.
-        && request.resource.data.userId == resource.data.userId
-        && request.resource.data.createdAt == resource.data.createdAt;
-
-      allow delete: if isAuthenticated() && isOwner(resource.data.userId);
+      allow read: if authed();
+      allow create: if authed()
+        && request.resource.data.postedByUid == request.auth.uid;
+      allow update, delete: if authed()
+        && resource.data.postedByUid == request.auth.uid;
     }
 
-    // Everything else is denied by default.
+    // ---- Profiles ----------------------------------------------------
+    match /profiles/{uid} {
+      allow read: if authed();
+      allow create, update: if isOwner(uid)
+        && request.resource.data.uid == uid;
+      allow delete: if isOwner(uid);
+    }
+
+    // ---- Applications --------------------------------------------------
+    match /applications/{appId} {
+      // `get` on a missing doc must be allowed so "have I applied yet?" checks work
+      // (a rule that dereferences a null `resource` would otherwise deny it).
+      allow get: if authed() && (resource == null || resource.data.studentUid == request.auth.uid);
+      allow list: if authed() && resource.data.studentUid == request.auth.uid;
+      allow create: if authed()
+        && request.resource.data.studentUid == request.auth.uid
+        && appId == request.auth.uid + '_' + request.resource.data.projectId
+        && request.resource.data.status == 'Applied';
+      // Owner may edit their own application; studentUid stays put.
+      allow update: if authed()
+        && resource.data.studentUid == request.auth.uid
+        && unchanged('studentUid') && unchanged('projectId');
+      allow delete: if authed() && resource.data.studentUid == request.auth.uid;
+    }
+
+    // ---- Messages ---------------------------------------------------
+    match /messages/{msgId} {
+      allow read: if authed() && resource.data.studentUid == request.auth.uid;
+      allow create: if authed()
+        && request.resource.data.studentUid == request.auth.uid
+        && request.resource.data.fromClient == false;
+      allow update, delete: if false;
+    }
+
+    // ---- Notifications ----------------------------------------------
+    match /notifications/{noteId} {
+      allow read: if authed() && resource.data.uid == request.auth.uid;
+      // A user may create notifications addressed to themselves (e.g. "application submitted").
+      allow create: if authed() && request.resource.data.uid == request.auth.uid;
+      // Only allow flipping the `read` flag on your own notification.
+      allow update: if authed()
+        && resource.data.uid == request.auth.uid
+        && unchanged('uid') && unchanged('type')
+        && unchanged('text') && unchanged('createdAt');
+      allow delete: if false;
+    }
+
+    // Everything else denied by default.
   }
 }

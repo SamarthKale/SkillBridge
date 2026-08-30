@@ -55,6 +55,14 @@ object AuthManager {
 
     fun logout() = auth.signOut()
 
+    /** Send a password-reset email. [onResult] gets a friendly error, or null on success. */
+    fun sendPasswordReset(email: String, onResult: (String?) -> Unit) {
+        if (email.isBlank()) { onResult("Enter your email first."); return }
+        auth.sendPasswordResetEmail(email.trim())
+            .addOnSuccessListener { onResult(null) }
+            .addOnFailureListener { onResult(friendlyError(it)) }
+    }
+
     /** Turn a Firebase exception into a short message a user can understand. */
     fun friendlyError(e: Throwable): String {
         val code = (e as? FirebaseAuthException)?.errorCode

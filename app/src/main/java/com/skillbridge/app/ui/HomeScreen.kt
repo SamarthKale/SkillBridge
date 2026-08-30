@@ -1,98 +1,133 @@
 package com.skillbridge.app.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.skillbridge.app.auth.AuthManager
-import com.skillbridge.app.data.Counts
-import com.skillbridge.app.ui.components.ProjectRow
-import com.skillbridge.app.ui.components.ScreenScaffold
-import com.skillbridge.app.ui.components.SecondaryButton
+import com.skillbridge.app.data.AppStatus
+import com.skillbridge.app.data.Category
+import com.skillbridge.app.ui.components.ApplicationCard
+import com.skillbridge.app.ui.components.EmptyState
+import com.skillbridge.app.ui.components.OpportunityCard
+import com.skillbridge.app.ui.components.SearchField
 import com.skillbridge.app.ui.components.SectionHeader
+import com.skillbridge.app.ui.components.SelectableChips
 import com.skillbridge.app.ui.components.StatCard
-import com.skillbridge.app.ui.components.rememberProjects
+import com.skillbridge.app.ui.components.rememberMyApplications
+import com.skillbridge.app.ui.components.rememberMyProfile
+import com.skillbridge.app.ui.components.rememberNotifications
+import com.skillbridge.app.ui.components.rememberOpportunities
+import com.skillbridge.app.ui.theme.Accent
 import com.skillbridge.app.ui.theme.Ink
 import com.skillbridge.app.ui.theme.Mute
 import com.skillbridge.app.ui.theme.Paper
 
 @Composable
 fun HomeScreen(
-    onOpenProjects: () -> Unit,
-    onOpenProfile: () -> Unit,
-    onAddProject: () -> Unit,
-    onOpenProject: (String) -> Unit
+    onOpenExplore: () -> Unit,
+    onOpenProject: (String) -> Unit,
+    onOpenApplications: () -> Unit,
+    onOpenApplication: (String) -> Unit,
+    onOpenNotifications: () -> Unit
 ) {
-    val state = rememberProjects()
-    val counts = Counts.from(state.projects)
-    val recent = state.projects.take(5)
-    val error = state.error
+    val profile by rememberMyProfile()
+    val apps by rememberMyApplications()
+    val opps by rememberOpportunities()
+    val notes by rememberNotifications()
+    val unread = notes.count { !it.read }
 
-    ScreenScaffold(
-        title = "Home",
-        actions = {
-            IconButton(onClick = onOpenProfile) {
-                Icon(Icons.Filled.Person, contentDescription = "Profile", tint = Ink)
+    val firstName = (profile?.name ?: "there").trim().split(" ").firstOrNull() ?: "there"
+    val recommended = opps.take(4)
+    val recent = apps.take(3)
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 20.dp)
+            .padding(top = 16.dp, bottom = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp)
+    ) {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text("Hello, $firstName 👋", style = MaterialTheme.typography.titleLarge)
+                Text("Find your next opportunity.", style = MaterialTheme.typography.bodyMedium, color = Mute)
             }
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = onAddProject, containerColor = Ink, contentColor = Paper) {
-                Icon(Icons.Filled.Add, contentDescription = "Add Project")
-            }
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
-                .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Text("Welcome, ${AuthManager.displayName()}", style = MaterialTheme.typography.titleLarge)
-
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                StatCard("Total", counts.total, Modifier.weight(1f))
-                StatCard("Active", counts.active, Modifier.weight(1f))
-                StatCard("Completed", counts.completed, Modifier.weight(1f))
-            }
-
-            SectionHeader("Recent Projects")
-
-            when {
-                error != null -> Text(
-                    error,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.error
-                )
-                state.loading -> Text(
-                    "Loading…",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Mute
-                )
-                recent.isEmpty() -> Text(
-                    "No projects yet. Tap + to add your first one.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Mute
-                )
-                else -> recent.forEach { project ->
-                    ProjectRow(project = project, onClick = { onOpenProject(project.id) })
+            Box {
+                IconButton(onClick = onOpenNotifications) {
+                    Icon(Icons.Filled.Notifications, contentDescription = "Notifications", tint = Ink)
+                }
+                if (unread > 0) {
+                    Box(
+                        Modifier
+                            .size(9.dp)
+                            .align(Alignment.TopEnd)
+                            .background(Accent, RoundedCornerShape(999.dp))
+                            .border(1.dp, Paper, RoundedCornerShape(999.dp))
+                    )
                 }
             }
+        }
 
-            SecondaryButton(text = "View All Projects", onClick = onOpenProjects)
+        SearchField(value = "", onValueChange = {}, enabled = false, onClick = onOpenExplore)
+
+        SelectableChips(
+            options = Category.ALL,
+            selected = emptySet(),
+            onToggle = { onOpenExplore() }
+        )
+
+        Spacer(Modifier.height(2.dp))
+        SectionHeader("My Progress")
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            StatCard("Applied", apps.size, Modifier.weight(1f))
+            StatCard("Review", apps.count { it.status == AppStatus.UNDER_REVIEW }, Modifier.weight(1f))
+            StatCard("Shortlisted", apps.count { it.status == AppStatus.SHORTLISTED }, Modifier.weight(1f))
+            StatCard("Accepted", apps.count { it.status == AppStatus.ACCEPTED }, Modifier.weight(1f))
+        }
+
+        Spacer(Modifier.height(2.dp))
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+            SectionHeader("Recent Applications")
+            Text("View all", style = MaterialTheme.typography.labelMedium, color = Accent,
+                modifier = Modifier.clickable(onClick = onOpenApplications).padding(4.dp))
+        }
+        if (recent.isEmpty()) {
+            EmptyState("You haven't applied to anything yet.")
+        } else {
+            recent.forEach { ApplicationCard(it) { onOpenApplication(it.id) } }
+        }
+
+        Spacer(Modifier.height(2.dp))
+        SectionHeader("Recommended Projects")
+        if (recommended.isEmpty()) {
+            EmptyState("Loading opportunities...")
+        } else {
+            recommended.forEach { OpportunityCard(it) { onOpenProject(it.id) } }
         }
     }
 }
