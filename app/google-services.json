@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "620276163516",
+    "project_id": "freelancing-fcc16",
+    "storage_bucket": "freelancing-fcc16.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:620276163516:android:77845b3bf598cea6b3c1b9",
+        "android_client_info": {
+          "package_name": "com.skillbridge.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJYBGoKnb9ETiRnbCc_U-1DsRjtbjEWHs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

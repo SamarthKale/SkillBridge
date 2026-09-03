@@ -12,8 +12,6 @@ build/
 /build
 /app/build
 
-# Firebase config is per-developer — do not commit it
-/app/google-services.json
 
 # Firebase CLI
 .firebase/
