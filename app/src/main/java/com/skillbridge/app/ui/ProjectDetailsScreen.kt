@@ -68,8 +68,18 @@ fun ProjectDetailsScreen(
                     LabeledValue("Deadline", o.deadline, Modifier.weight(1f))
                 }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(24.dp)) {
-                    LabeledValue("Location", if (o.remote) "Remote" else o.location.ifBlank { "On-site" }, Modifier.weight(1f))
+                    LabeledValue("Location", if (o.workArrangement == com.skillbridge.app.data.WorkArrangement.REMOTE) "Remote" else "${o.workArrangement} (${o.location.ifBlank { "On-site" }})", Modifier.weight(1f))
                     LabeledValue("Experience", o.experienceRequired, Modifier.weight(1f))
+                }
+                if (o.workArrangement != com.skillbridge.app.data.WorkArrangement.REMOTE) {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+                        LabeledValue("Max Distance", "${o.maxDistanceKm} km", Modifier.weight(1f))
+                        if (o.latitude != null && o.longitude != null) {
+                            Text("📍 View on Map", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary, modifier = Modifier.weight(1f).padding(top = 16.dp))
+                        } else {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
                 }
 
                 Spacer(Modifier.height(2.dp))

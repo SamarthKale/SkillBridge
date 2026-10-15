@@ -44,10 +44,32 @@ fun rememberMyProfile(): State<Profile?> {
 }
 
 @Composable
+fun rememberClientProjects(): State<List<Opportunity>> {
+    val uid = AuthManager.uid()
+    val state = remember { mutableStateOf<List<Opportunity>>(emptyList()) }
+    DisposableEffect(uid) {
+        if (uid.isEmpty()) return@DisposableEffect onDispose { }
+        val reg = Repo.listenClientProjects(uid, onChange = { state.value = it })
+        onDispose { reg.remove() }
+    }
+    return state
+}
+
+@Composable
 fun rememberOpportunities(): State<List<Opportunity>> {
     val state = remember { mutableStateOf<List<Opportunity>>(emptyList()) }
     DisposableEffect(Unit) {
         val reg = Repo.listenOpportunities(onChange = { state.value = it })
+        onDispose { reg.remove() }
+    }
+    return state
+}
+
+@Composable
+fun rememberStudentProfiles(): State<List<Profile>> {
+    val state = remember { mutableStateOf<List<Profile>>(emptyList()) }
+    DisposableEffect(Unit) {
+        val reg = Repo.listenStudentProfiles(onChange = { state.value = it })
         onDispose { reg.remove() }
     }
     return state

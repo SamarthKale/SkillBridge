@@ -52,7 +52,7 @@ fun relativeTime(millis: Long): String {
 }
 
 @Composable
-fun OpportunityCard(opp: Opportunity, onClick: () -> Unit) {
+fun OpportunityCard(opp: Opportunity, distanceText: String = "", onClick: () -> Unit) {
     OutlinedCardBox(onClick = onClick) {
         Column {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -65,9 +65,13 @@ fun OpportunityCard(opp: Opportunity, onClick: () -> Unit) {
             }
             Spacer(Modifier.height(8.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Pill(if (opp.remote) "Remote" else opp.location.ifBlank { "On-site" })
+                Pill(if (opp.workArrangement == com.skillbridge.app.data.WorkArrangement.REMOTE) "Remote" else opp.location.ifBlank { "On-site" })
                 Spacer(Modifier.width(6.dp))
                 Pill(opp.category)
+            }
+            if (distanceText.isNotBlank()) {
+                Spacer(Modifier.height(8.dp))
+                Text(distanceText, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
             }
             if (opp.skills.isNotEmpty()) {
                 Spacer(Modifier.height(8.dp))
@@ -104,8 +108,8 @@ fun ApplicationCard(app: Application, onClick: () -> Unit) {
 }
 
 @Composable
-fun MessageBubble(msg: Message) {
-    val mine = !msg.fromClient
+fun MessageBubble(msg: Message, isClientUser: Boolean = false) {
+    val mine = if (isClientUser) msg.fromClient else !msg.fromClient
     Row(
         Modifier.fillMaxWidth().padding(vertical = 3.dp),
         horizontalArrangement = if (mine) Arrangement.End else Arrangement.Start

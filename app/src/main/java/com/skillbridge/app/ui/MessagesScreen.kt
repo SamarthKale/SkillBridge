@@ -30,25 +30,52 @@ import com.skillbridge.app.ui.components.Avatar
 import com.skillbridge.app.ui.components.EmptyState
 import com.skillbridge.app.ui.components.OutlinedCardBox
 import com.skillbridge.app.ui.components.ScreenScaffold
+import com.skillbridge.app.data.Message
+import com.skillbridge.app.ui.components.rememberClientProjects
+import com.skillbridge.app.ui.components.rememberMyProfile
 import com.skillbridge.app.ui.components.rememberMyApplications
 import com.skillbridge.app.ui.theme.Mute
 
 @Composable
 fun MessagesScreen(onOpenConversation: (String) -> Unit) {
-    val apps by rememberMyApplications()
-    val threads = apps.filter { AppStatus.messagingUnlocked(it.status) }
+    val uid = AuthManager.uid()
+    val profile by rememberMyProfile()
+    val isClient = profile?.role == "client"
+
+    var messages by remember { mutableStateOf<List<Message>>(emptyList()) }
+    var loading by remember { mutableStateOf(true) }
+
+    DisposableEffect(uid, isClient) {
+        val reg = if (isClient) {
+            Repo.listenClientThreads(uid) { 
+                messages = it 
+                loading = false
+            }
+        } else {
+            Repo.listenStudentThreads(uid) {
+                messages = it
+                loading = false
+            }
+        }
+        onDispose { reg.remove() }
+    }
 
     ScreenScaffold(title = "Messages") { padding ->
-        if (threads.isEmpty()) {
-            EmptyState("No conversations yet.\nMessaging opens when an application is shortlisted or accepted.")
+        if (loading) {
+            Text("Loading...", color = Mute, modifier = Modifier.padding(padding).padding(20.dp))
+        } else if (messages.isEmpty()) {
+            EmptyState("No conversations yet.")
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize().padding(padding).padding(horizontal = 20.dp),
                 contentPadding = androidx.compose.foundation.layout.PaddingValues(vertical = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                items(threads, key = { it.id }) { app ->
-                    ConversationRow(app) { onOpenConversation(app.id) }
+                // Group messages by application ID and only show the latest message for each thread
+                val uniqueThreads = messages.groupBy { it.applicationId }.map { it.value.first() }
+                
+                items(uniqueThreads, key = { it.applicationId }) { msg ->
+                    ConversationRow(msg, isClient) { onOpenConversation(msg.applicationId) }
                 }
             }
         }
@@ -56,24 +83,17 @@ fun MessagesScreen(onOpenConversation: (String) -> Unit) {
 }
 
 @Composable
-private fun ConversationRow(app: Application, onClick: () -> Unit) {
-    val uid = AuthManager.uid()
-    var snippet by remember { mutableStateOf("Tap to open the conversation") }
-    DisposableEffect(app.id) {
-        val reg = Repo.listenThread(uid, app.id) { msgs ->
-            msgs.lastOrNull()?.let {
-                snippet = (if (it.fromClient) "" else "You: ") + it.text
-            }
-        }
-        onDispose { reg.remove() }
-    }
+private fun ConversationRow(msg: Message, isClient: Boolean, onClick: () -> Unit) {
+    val displayName = if (isClient) "Student" else msg.clientName // Hardcoded Student name for prototype as we don't have it in the message object
+    val snippet = (if (msg.fromClient == isClient) "You: " else "") + msg.text
+
     OutlinedCardBox(onClick = onClick) {
         Row(Modifier.fillMaxWidth()) {
-            Avatar(app.company)
+            Avatar(displayName)
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
-                Text(app.company, style = MaterialTheme.typography.bodyLarge)
-                Text(app.projectTitle, style = MaterialTheme.typography.labelMedium, color = Mute,
+                Text(displayName, style = MaterialTheme.typography.bodyLarge)
+                Text(msg.projectTitle, style = MaterialTheme.typography.labelMedium, color = Mute,
                     maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Spacer(Modifier.height(2.dp))
                 Text(snippet, style = MaterialTheme.typography.bodyMedium, color = Mute,

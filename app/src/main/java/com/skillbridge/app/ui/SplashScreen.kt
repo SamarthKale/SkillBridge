@@ -33,7 +33,11 @@ fun SplashScreen(onResolved: (String) -> Unit) {
             onResolved(Routes.LOGIN)
         } else {
             Repo.getProfile(AuthManager.uid()) { profile ->
-                onResolved(if (profile != null) Routes.HOME else Routes.PROFILE_SETUP)
+                when {
+                    profile == null -> onResolved(Routes.PROFILE_SETUP)
+                    !profile.acceptedTerms -> onResolved(Routes.PAYMENT_SETUP)
+                    else -> onResolved(Routes.HOME)
+                }
             }
         }
     }

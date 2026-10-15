@@ -108,6 +108,16 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // ---- AI Conversations -------------------------------------------
+    // Strict owner-only access: each user can only read, create, update,
+    // or clear their own AI conversation history document.
+    match /ai_conversations/{uid} {
+      allow read: if isOwner(uid);
+      allow create, update: if isOwner(uid)
+        && request.resource.data.ownerUid == uid;
+      allow delete: if isOwner(uid);
+    }
+
     // Everything else denied by default.
   }
 }

@@ -24,15 +24,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.skillbridge.app.data.AppStatus
 import com.skillbridge.app.data.Category
+import com.skillbridge.app.recommendation.RecommendationCache
+import com.skillbridge.app.ui.components.AiAssistantBanner
 import com.skillbridge.app.ui.components.ApplicationCard
 import com.skillbridge.app.ui.components.EmptyState
-import com.skillbridge.app.ui.components.OpportunityCard
+import com.skillbridge.app.ui.components.RecommendedProjectCard
 import com.skillbridge.app.ui.components.SearchField
 import com.skillbridge.app.ui.components.SectionHeader
 import com.skillbridge.app.ui.components.SelectableChips
@@ -42,7 +45,9 @@ import com.skillbridge.app.ui.components.rememberMyProfile
 import com.skillbridge.app.ui.components.rememberNotifications
 import com.skillbridge.app.ui.components.rememberOpportunities
 import com.skillbridge.app.ui.theme.Accent
+import com.skillbridge.app.ui.theme.AccentSoft
 import com.skillbridge.app.ui.theme.Ink
+import com.skillbridge.app.ui.theme.Line
 import com.skillbridge.app.ui.theme.Mute
 import com.skillbridge.app.ui.theme.Paper
 
@@ -52,7 +57,9 @@ fun HomeScreen(
     onOpenProject: (String) -> Unit,
     onOpenApplications: () -> Unit,
     onOpenApplication: (String) -> Unit,
-    onOpenNotifications: () -> Unit
+    onOpenNotifications: () -> Unit,
+    onOpenAiAssistant: () -> Unit = {},
+    onOpenProfile: () -> Unit = {}
 ) {
     val profile by rememberMyProfile()
     val apps by rememberMyApplications()
@@ -60,8 +67,17 @@ fun HomeScreen(
     val notes by rememberNotifications()
     val unread = notes.count { !it.read }
 
-    val firstName = (profile?.name ?: "there").trim().split(" ").firstOrNull() ?: "there"
-    val recommended = opps.take(4)
+    val firstName = (profile?.name ?: "there").trim().split(" ").firstOrNull().takeUnless { it.isNullOrBlank() } ?: "there"
+    val allRecommendations = remember(profile, opps, apps) {
+        RecommendationCache.getOrComputeStudentRecommendations(
+            profile = profile,
+            opportunities = opps,
+            applications = apps,
+            excludeApplied = false
+        )
+    }
+    val recommended = allRecommendations.take(5)
+    val limitedNote = recommended.firstOrNull()?.limitedProfileNote
     val recent = apps.take(3)
 
     Column(
@@ -101,6 +117,11 @@ fun HomeScreen(
             onToggle = { onOpenExplore() }
         )
 
+        AiAssistantBanner(
+            isClient = false,
+            onClick = onOpenAiAssistant
+        )
+
         Spacer(Modifier.height(2.dp))
         SectionHeader("My Progress")
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -123,11 +144,57 @@ fun HomeScreen(
         }
 
         Spacer(Modifier.height(2.dp))
-        SectionHeader("Recommended Projects")
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            SectionHeader("Recommended For You")
+            Text(
+                "Explore all",
+                style = MaterialTheme.typography.labelMedium,
+                color = Accent,
+                modifier = Modifier.clickable(onClick = onOpenExplore).padding(4.dp)
+            )
+        }
+
+        if (!limitedNote.isNullOrBlank()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(AccentSoft, RoundedCornerShape(10.dp))
+                    .border(1.dp, Line, RoundedCornerShape(10.dp))
+                    .clickable(onClick = onOpenProfile)
+                    .padding(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "ℹ️ $limitedNote",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Ink,
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    text = "Update Profile →",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = Accent,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
+        }
+
         if (recommended.isEmpty()) {
-            EmptyState("Loading opportunities...")
+            EmptyState("No opportunities available right now.")
         } else {
-            recommended.forEach { OpportunityCard(it) { onOpenProject(it.id) } }
+            recommended.forEach { rec ->
+                RecommendedProjectCard(
+                    rec = rec,
+                    onViewProject = { onOpenProject(rec.opportunity.id) }
+                )
+            }
         }
     }
 }
+

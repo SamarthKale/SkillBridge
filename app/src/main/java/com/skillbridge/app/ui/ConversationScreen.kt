@@ -34,6 +34,7 @@ import com.skillbridge.app.data.Application
 import com.skillbridge.app.data.Message
 import com.skillbridge.app.data.Repo
 import com.skillbridge.app.ui.components.MessageBubble
+import com.skillbridge.app.ui.components.rememberMyProfile
 import com.skillbridge.app.ui.components.ScreenScaffold
 import com.skillbridge.app.ui.theme.Accent
 import com.skillbridge.app.ui.theme.Mute
@@ -46,9 +47,12 @@ fun ConversationScreen(applicationId: String, onBack: () -> Unit) {
     var draft by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
 
+    val profile by rememberMyProfile()
+    val isClient = profile?.role == "client"
+
     LaunchedEffect(applicationId) { Repo.getApplication(applicationId) { app = it } }
     DisposableEffect(applicationId) {
-        val reg = Repo.listenThread(uid, applicationId) { messages = it }
+        val reg = Repo.listenThread(applicationId) { messages = it }
         onDispose { reg.remove() }
     }
     LaunchedEffect(messages.size) {
@@ -74,7 +78,7 @@ fun ConversationScreen(applicationId: String, onBack: () -> Unit) {
                         )
                     }
                 }
-                items(messages, key = { it.id }) { MessageBubble(it) }
+                items(messages, key = { it.id }) { MessageBubble(it, isClient) }
             }
 
             Row(
@@ -97,7 +101,7 @@ fun ConversationScreen(applicationId: String, onBack: () -> Unit) {
                         val text = draft.trim()
                         if (text.isEmpty()) return@IconButton
                         draft = ""
-                        Repo.sendMessage(a, uid, text) { }
+                        Repo.sendMessage(a, uid, text, isClient) { }
                     }
                 ) {
                     Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send", tint = Accent)

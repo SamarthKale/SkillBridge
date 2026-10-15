@@ -14,7 +14,11 @@ data class Opportunity(
     val company: String = "",
     val category: String = Category.OTHER,
     val budget: String = "",
+    val workArrangement: String = WorkArrangement.REMOTE,
     val location: String = "",
+    val latitude: Double? = null,
+    val longitude: Double? = null,
+    val maxDistanceKm: Int = 0,
     val remote: Boolean = false,
     val skills: List<String> = emptyList(),
     val description: String = "",
@@ -39,6 +43,10 @@ data class Profile(
     val email: String = "",
     val phone: String = "",
     val location: String = "",
+    val locationEnabled: Boolean = false,
+    val latitude: Double? = null,
+    val longitude: Double? = null,
+    val locationUpdatedAt: Long = 0L,
     val photoUrl: String = "",
     val degree: String = "",
     val college: String = "",
@@ -48,6 +56,14 @@ data class Profile(
     val experience: String = "",
     val bio: String = "",
     val resumeUrl: String = "",
+    val companyName: String = "",
+    val companyType: String = "",
+    val companyDescription: String = "",
+    val cardName: String = "",
+    val cardNumber: String = "",
+    val cardExpiry: String = "",
+    val cardCvv: String = "",
+    val acceptedTerms: Boolean = false,
     val createdAt: Long = 0L,
     val updatedAt: Long = 0L
 )
@@ -121,4 +137,11 @@ object Skills {
         "Firebase", "React", "Flutter", "Figma", "Data Analysis", "Machine Learning",
         "Content Writing", "Node.js", "SQL", "Marketing", "Video Editing"
     )
+}
+
+object WorkArrangement {
+    const val REMOTE = "Remote"
+    const val HYBRID = "Hybrid"
+    const val ON_SITE = "On-site"
+    val ALL = listOf(REMOTE, HYBRID, ON_SITE)
 }

@@ -23,6 +23,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.skillbridge.app.auth.AuthManager
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Switch
+import androidx.compose.ui.platform.LocalContext
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import com.skillbridge.app.data.Repo
+import com.skillbridge.app.utils.LocationUtils
 import com.skillbridge.app.ui.components.Avatar
 import com.skillbridge.app.ui.components.LabeledValue
 import com.skillbridge.app.ui.components.OutlinedCardBox
@@ -39,8 +46,23 @@ fun ProfileScreen(
     onEditProfile: () -> Unit,
     onLoggedOut: () -> Unit
 ) {
+    val context = LocalContext.current
     val profile by rememberMyProfile()
     var confirmLogout by remember { mutableStateOf(false) }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions(),
+        onResult = { permissions ->
+            if (permissions.values.any { it }) {
+                LocationUtils.getCurrentLocation(context, onSuccess = { lat, lon ->
+                    profile?.let { p ->
+                        val updated = p.copy(locationEnabled = true, latitude = lat, longitude = lon)
+                        Repo.saveProfile(updated) {}
+                    }
+                }, onFailure = { })
+            }
+        }
+    )
 
     ScreenScaffold(title = "Profile") { padding ->
         Column(
@@ -52,6 +74,8 @@ fun ProfileScreen(
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             val name = profile?.name ?: AuthManager.displayName()
+            val isClient = profile?.role == "client"
+
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Avatar(name, size = 60)
                 Spacer(Modifier.width(14.dp))
@@ -60,7 +84,7 @@ fun ProfileScreen(
                     Text(
                         listOfNotNull(
                             profile?.role?.replaceFirstChar { it.uppercase() },
-                            profile?.branch?.ifBlank { null }
+                            if (isClient) profile?.companyName?.ifBlank { null } else profile?.branch?.ifBlank { null }
                         ).joinToString(" · "),
                         style = MaterialTheme.typography.labelMedium, color = Mute
                     )
@@ -68,31 +92,71 @@ fun ProfileScreen(
                 }
             }
 
-            SectionHeader("Skills")
-            SkillChips(profile?.skills ?: emptyList())
+            if (isClient) {
+                SectionHeader("Company Details")
+                OutlinedCardBox {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        LabeledValue("Company Name", profile?.companyName ?: "-")
+                        LabeledValue("Type", profile?.companyType ?: "-")
+                        LabeledValue("Location", profile?.location ?: "-")
+                    }
+                }
 
-            SectionHeader("Education")
+                SectionHeader("About Us")
+                Text(profile?.companyDescription?.ifBlank { "-" } ?: "-", style = MaterialTheme.typography.bodyMedium)
+            } else {
+                SectionHeader("Skills")
+                SkillChips(profile?.skills ?: emptyList())
+
+                SectionHeader("Education")
+                OutlinedCardBox {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        LabeledValue("Degree", profile?.degree ?: "-")
+                        LabeledValue("College", profile?.college ?: "-")
+                        LabeledValue("Branch", profile?.branch ?: "-")
+                        LabeledValue(
+                            "Graduation Year",
+                            profile?.graduationYear?.takeIf { it > 0 }?.toString() ?: "-"
+                        )
+                    }
+                }
+
+                SectionHeader("Experience")
+                Text(profile?.experience?.ifBlank { "-" } ?: "-", style = MaterialTheme.typography.bodyMedium)
+
+                SectionHeader("About")
+                Text(profile?.bio?.ifBlank { "-" } ?: "-", style = MaterialTheme.typography.bodyMedium)
+
+                SectionHeader("Resume")
+                Text(profile?.resumeUrl?.ifBlank { "No resume link added." } ?: "-",
+                    style = MaterialTheme.typography.bodyMedium, color = Mute)
+            }
+
+            Spacer(Modifier.height(6.dp))
+            SectionHeader("Privacy Settings")
             OutlinedCardBox {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    LabeledValue("Degree", profile?.degree ?: "-")
-                    LabeledValue("College", profile?.college ?: "-")
-                    LabeledValue("Branch", profile?.branch ?: "-")
-                    LabeledValue(
-                        "Graduation Year",
-                        profile?.graduationYear?.takeIf { it > 0 }?.toString() ?: "-"
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                    Text("Share my location (for nearby matches)", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+                    Switch(
+                        checked = profile?.locationEnabled == true,
+                        onCheckedChange = { enable ->
+                            if (enable) {
+                                permissionLauncher.launch(
+                                    arrayOf(
+                                        android.Manifest.permission.ACCESS_FINE_LOCATION,
+                                        android.Manifest.permission.ACCESS_COARSE_LOCATION
+                                    )
+                                )
+                            } else {
+                                profile?.let { p ->
+                                    val updated = p.copy(locationEnabled = false, latitude = null, longitude = null)
+                                    Repo.saveProfile(updated) {}
+                                }
+                            }
+                        }
                     )
                 }
             }
-
-            SectionHeader("Experience")
-            Text(profile?.experience?.ifBlank { "-" } ?: "-", style = MaterialTheme.typography.bodyMedium)
-
-            SectionHeader("About")
-            Text(profile?.bio?.ifBlank { "-" } ?: "-", style = MaterialTheme.typography.bodyMedium)
-
-            SectionHeader("Resume")
-            Text(profile?.resumeUrl?.ifBlank { "No resume link added." } ?: "-",
-                style = MaterialTheme.typography.bodyMedium, color = Mute)
 
             Spacer(Modifier.height(6.dp))
             PrimaryButton("Edit Profile", onClick = onEditProfile)
