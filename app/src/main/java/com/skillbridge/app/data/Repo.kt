@@ -256,13 +256,21 @@ object Repo {
             }
     }
 
+    /**
+     * Moves an application through the pipeline (the project's client does this).
+     * [onResult] is `false` when the server refuses the write, so callers never show a status the
+     * student cannot see. The optimistic local change is undone in that case.
+     */
     fun updateApplicationStatus(id: String, newStatus: String, onResult: (Boolean) -> Unit) {
-        localDb?.getApplication(id)?.let { a ->
-            localDb?.insertOrUpdateApplication(a.copy(status = newStatus))
-        }
+        val previous = localDb?.getApplication(id)
+        previous?.let { localDb?.insertOrUpdateApplication(it.copy(status = newStatus)) }
         db.collection("applications").document(id).update("status", newStatus)
             .addOnSuccessListener { onResult(true) }
-            .addOnFailureListener { Log.w(TAG, "updateApplicationStatus", it); onResult(true) }
+            .addOnFailureListener {
+                Log.w(TAG, "updateApplicationStatus", it)
+                previous?.let { p -> localDb?.insertOrUpdateApplication(p) }
+                onResult(false)
+            }
     }
 
     /** Creates an application if the student has not already applied. */
@@ -365,12 +373,15 @@ object Repo {
         )
         localDb?.insertMessage(msg)
         
+        // Offline writes are queued by the Firestore SDK itself and only fail when the server
+        // refuses them, so a failure here means the message was NOT delivered: report it and drop
+        // the optimistic local copy (re-queuing a refused write would just fail again forever).
         newRef.set(msg)
             .addOnSuccessListener { onResult(true) }
-            .addOnFailureListener { 
+            .addOnFailureListener {
                 Log.w(TAG, "sendMessage", it)
-                localDb?.addToSyncQueue("INSERT", "message", msg.id, gson.toJson(msg))
-                onResult(true)
+                localDb?.deleteMessage(msg.id)
+                onResult(false)
             }
     }
 

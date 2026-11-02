@@ -45,6 +45,7 @@ fun ConversationScreen(applicationId: String, onBack: () -> Unit) {
     var app by remember { mutableStateOf<Application?>(null) }
     var messages by remember { mutableStateOf<List<Message>>(emptyList()) }
     var draft by remember { mutableStateOf("") }
+    var sendError by remember { mutableStateOf<String?>(null) }
     val listState = rememberLazyListState()
 
     val profile by rememberMyProfile()
@@ -81,6 +82,14 @@ fun ConversationScreen(applicationId: String, onBack: () -> Unit) {
                 items(messages, key = { it.id }) { MessageBubble(it, isClient) }
             }
 
+            sendError?.let {
+                Text(
+                    it,
+                    style = androidx.compose.material3.MaterialTheme.typography.labelMedium,
+                    color = androidx.compose.material3.MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(horizontal = 20.dp)
+                )
+            }
             Row(
                 Modifier.fillMaxWidth().padding(12.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -101,7 +110,13 @@ fun ConversationScreen(applicationId: String, onBack: () -> Unit) {
                         val text = draft.trim()
                         if (text.isEmpty()) return@IconButton
                         draft = ""
-                        Repo.sendMessage(a, uid, text, isClient) { }
+                        sendError = null
+                        Repo.sendMessage(a, uid, text, isClient) { ok ->
+                            if (!ok) {
+                                draft = text // give the text back so nothing is lost
+                                sendError = "Message not sent. Please try again."
+                            }
+                        }
                     }
                 ) {
                     Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send", tint = Accent)

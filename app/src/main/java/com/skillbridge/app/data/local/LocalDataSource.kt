@@ -295,6 +295,11 @@ class LocalDataSource(context: Context) {
 
     // --- Messages ---
     
+    /** Removes a message that the server refused, so it doesn't linger as if it had been sent. */
+    fun deleteMessage(id: String) {
+        dbHelper.writableDatabase.delete(DatabaseHelper.TABLE_MESSAGES, "id = ?", arrayOf(id))
+    }
+
     fun insertMessage(msg: Message) {
         val db = dbHelper.writableDatabase
         val cv = ContentValues().apply {

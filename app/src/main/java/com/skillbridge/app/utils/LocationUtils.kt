@@ -3,6 +3,7 @@ package com.skillbridge.app.utils
 import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
+import com.google.android.gms.location.CurrentLocationRequest
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -25,8 +26,16 @@ object LocationUtils {
 
         val cancellationTokenSource = CancellationTokenSource()
 
+        // Ask for a FRESH high-accuracy fix (maxUpdateAge 0) instead of letting the provider hand
+        // back a cached location from earlier, which can be somewhere else entirely.
+        val request = CurrentLocationRequest.Builder()
+            .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
+            .setMaxUpdateAgeMillis(0)
+            .setDurationMillis(15_000)
+            .build()
+
         fusedLocationClient.getCurrentLocation(
-            Priority.PRIORITY_HIGH_ACCURACY,
+            request,
             cancellationTokenSource.token
         ).addOnSuccessListener { location: Location? ->
             if (location != null) {
@@ -40,6 +49,22 @@ object LocationUtils {
             android.util.Log.e("SkillBridge GPS DEBUG", "locationReceived = false (exception)", exception)
             onFailure(exception)
         }
+    }
+
+    /**
+     * Human-readable place for a point ("Vashi, Navi Mumbai"), or null when it can't be resolved
+     * (no network / no geocoder). Blocking: call off the main thread.
+     */
+    @Suppress("DEPRECATION")
+    fun placeName(context: Context, lat: Double, lon: Double): String? = try {
+        if (!android.location.Geocoder.isPresent()) null
+        else android.location.Geocoder(context, java.util.Locale.getDefault())
+            .getFromLocation(lat, lon, 1)?.firstOrNull()?.let { a ->
+                listOfNotNull(a.subLocality ?: a.thoroughfare, a.locality ?: a.subAdminArea)
+                    .distinct().joinToString(", ").ifBlank { a.adminArea }
+            }
+    } catch (_: Exception) {
+        null
     }
 
     /**

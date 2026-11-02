@@ -33,7 +33,18 @@ import com.skillbridge.app.data.Category
 import com.skillbridge.app.data.Opportunity
 import com.skillbridge.app.data.Repo
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.LaunchedEffect
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsRequest
+import com.google.android.gms.location.Priority
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import com.skillbridge.app.data.Skills
@@ -81,22 +92,95 @@ fun PostProjectScreen(
     var error by remember { mutableStateOf<String?>(null) }
     var saving by remember { mutableStateOf(false) }
 
+    // "Use current location" flow: our confirmation popup -> system permission popup (only shown by
+    // Android while permission is not yet granted) -> "turn on location" prompt if the device's
+    // location switch is off -> a fresh GPS fix.
+    var showLocationDialog by remember { mutableStateOf(false) }
+    var locating by remember { mutableStateOf(false) }
+    var placeName by remember { mutableStateOf<String?>(null) }
+
+    fun fetchLocation() {
+        locating = true
+        LocationUtils.getCurrentLocation(context, onSuccess = { lat, lon ->
+            locating = false
+            latitude = lat
+            longitude = lon
+            placeName = null
+            error = null
+        }, onFailure = {
+            locating = false
+            error = "Could not get your location. Make sure location is on and try again, or enter it manually."
+        })
+    }
+
+    val settingsResolver = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartIntentSenderForResult(),
+        onResult = { result ->
+            if (result.resultCode == android.app.Activity.RESULT_OK) fetchLocation()
+            else error = "Location is turned off on this device. Turn it on to use your current location."
+        }
+    )
+
+    fun ensureLocationOnThenFetch() {
+        val request = LocationSettingsRequest.Builder()
+            .addLocationRequest(LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5_000L).build())
+            .setAlwaysShow(true)
+            .build()
+        LocationServices.getSettingsClient(context).checkLocationSettings(request)
+            .addOnSuccessListener { fetchLocation() }
+            .addOnFailureListener { e ->
+                if (e is ResolvableApiException) {
+                    // Shows Google's "For better experience, turn on device location" popup.
+                    settingsResolver.launch(IntentSenderRequest.Builder(e.resolution).build())
+                } else {
+                    fetchLocation() // can't check; just try
+                }
+            }
+    }
+
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions(),
         onResult = { permissions ->
-            if (permissions.values.any { it }) {
-                LocationUtils.getCurrentLocation(context, onSuccess = { lat, lon ->
-                    latitude = lat
-                    longitude = lon
-                    error = null
-                }, onFailure = {
-                    error = "Could not fetch location. Please enter it manually."
-                })
-            } else {
-                error = "Location permission denied. Please enter location manually."
-            }
+            if (permissions.values.any { it }) ensureLocationOnThenFetch()
+            else error = "Location permission denied. Allow it in Settings or enter the location manually."
         }
     )
+
+    // Look up a readable place name for the captured point and pre-fill the address if it's empty.
+    LaunchedEffect(latitude, longitude) {
+        val lat = latitude
+        val lon = longitude
+        if (lat != null && lon != null && placeName == null) {
+            val name = withContext(Dispatchers.IO) { LocationUtils.placeName(context, lat, lon) }
+            placeName = name ?: ""
+            if (name != null && location.isBlank()) location = name
+        }
+    }
+
+    if (showLocationDialog) {
+        AlertDialog(
+            onDismissRequest = { showLocationDialog = false },
+            title = { Text("Use your current location?") },
+            text = {
+                Text(
+                    "SkillBridge will read your device's location once to pin this project on the map. " +
+                        "It is only saved with this project."
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    showLocationDialog = false
+                    permissionLauncher.launch(
+                        arrayOf(
+                            android.Manifest.permission.ACCESS_FINE_LOCATION,
+                            android.Manifest.permission.ACCESS_COARSE_LOCATION
+                        )
+                    )
+                }) { Text("Allow") }
+            },
+            dismissButton = { TextButton(onClick = { showLocationDialog = false }) { Text("Not now") } }
+        )
+    }
 
     fun post() {
         if (title.isBlank() || budget.isBlank() || description.isBlank()) {
@@ -197,15 +281,13 @@ fun PostProjectScreen(
                     )
 
                     SecondaryButton(
-                        text = if (latitude != null && longitude != null) "📍 Update GPS Coordinates" else "📍 Use Current Location (GPS)",
-                        onClick = {
-                            permissionLauncher.launch(
-                                arrayOf(
-                                    android.Manifest.permission.ACCESS_FINE_LOCATION,
-                                    android.Manifest.permission.ACCESS_COARSE_LOCATION
-                                )
-                            )
-                        }
+                        text = when {
+                            locating -> "Getting your location…"
+                            latitude != null && longitude != null -> "📍 Update GPS Coordinates"
+                            else -> "📍 Use Current Location (GPS)"
+                        },
+                        enabled = !locating,
+                        onClick = { showLocationDialog = true }
                     )
 
                     if (latitude != null && longitude != null) {
@@ -217,7 +299,8 @@ fun PostProjectScreen(
                                 .padding(horizontal = 12.dp, vertical = 8.dp)
                         ) {
                             Text(
-                                text = "📍 ${String.format(Locale.getDefault(), "%.4f", latitude)}, ${String.format(Locale.getDefault(), "%.4f", longitude)}",
+                                text = "📍 " + (placeName?.takeIf { it.isNotBlank() }?.let { "$it  ·  " } ?: "") +
+                                    "${String.format(Locale.getDefault(), "%.4f", latitude)}, ${String.format(Locale.getDefault(), "%.4f", longitude)}",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = Accent,
                                 modifier = Modifier.weight(1f)

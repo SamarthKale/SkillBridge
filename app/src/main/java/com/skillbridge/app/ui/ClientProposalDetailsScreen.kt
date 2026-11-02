@@ -27,11 +27,14 @@ import com.skillbridge.app.ui.components.OutlinedCardBox
 import com.skillbridge.app.ui.components.PrimaryButton
 import com.skillbridge.app.ui.components.ScreenScaffold
 import com.skillbridge.app.ui.components.SecondaryButton
+import com.skillbridge.app.ui.components.ErrorText
 import com.skillbridge.app.ui.components.ResumeViewer
 import com.skillbridge.app.ui.components.SectionHeader
 import com.skillbridge.app.ui.components.StatusChip
 import com.skillbridge.app.ui.components.formatDate
 import com.skillbridge.app.ui.theme.Mute
+
+private const val STATUS_ERROR = "Couldn't update the status. Check your connection and try again."
 
 @Composable
 fun ClientProposalDetailsScreen(
@@ -42,6 +45,7 @@ fun ClientProposalDetailsScreen(
 ) {
     var app by remember { mutableStateOf<Application?>(null) }
     var loading by remember { mutableStateOf(true) }
+    var statusError by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(applicationId) {
         Repo.getApplication(applicationId) { 
@@ -97,7 +101,8 @@ fun ClientProposalDetailsScreen(
                             text = "Shortlist Candidate",
                             onClick = {
                                 Repo.updateApplicationStatus(a.id, AppStatus.SHORTLISTED) { success ->
-                                    if (success) app = a.copy(status = AppStatus.SHORTLISTED)
+                                    if (success) { app = a.copy(status = AppStatus.SHORTLISTED); statusError = null }
+                                    else statusError = STATUS_ERROR
                                 }
                             }
                         )
@@ -105,7 +110,8 @@ fun ClientProposalDetailsScreen(
                             text = "Reject",
                             onClick = {
                                 Repo.updateApplicationStatus(a.id, AppStatus.REJECTED) { success ->
-                                    if (success) app = a.copy(status = AppStatus.REJECTED)
+                                    if (success) { app = a.copy(status = AppStatus.REJECTED); statusError = null }
+                                    else statusError = STATUS_ERROR
                                 }
                             }
                         )
@@ -117,7 +123,8 @@ fun ClientProposalDetailsScreen(
                             text = "Accept Proposal & Hire",
                             onClick = {
                                 Repo.updateApplicationStatus(a.id, AppStatus.ACCEPTED) { success ->
-                                    if (success) app = a.copy(status = AppStatus.ACCEPTED)
+                                    if (success) { app = a.copy(status = AppStatus.ACCEPTED); statusError = null }
+                                    else statusError = STATUS_ERROR
                                 }
                             }
                         )
@@ -129,6 +136,7 @@ fun ClientProposalDetailsScreen(
                         Text("This proposal was rejected.", style = MaterialTheme.typography.labelMedium, color = Mute)
                     }
                 }
+                ErrorText(statusError)
                 Spacer(Modifier.height(8.dp))
             }
         }

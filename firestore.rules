@@ -51,6 +51,24 @@ service cloud.firestore {
     function unchanged(field) {
       return request.resource.data[field] == resource.data[field];
     }
+    // True when the signed-in user posted the project with this id (i.e. is its client).
+    function ownsProject(projectId) {
+      return authed()
+        && exists(/databases/$(database)/documents/projects/$(projectId))
+        && get(/databases/$(database)/documents/projects/$(projectId)).data.postedByUid == request.auth.uid;
+    }
+    // True when the signed-in user is the student who sent this application.
+    function isApplicant(appId) {
+      return authed()
+        && exists(/databases/$(database)/documents/applications/$(appId))
+        && get(/databases/$(database)/documents/applications/$(appId)).data.studentUid == request.auth.uid;
+    }
+    // True when the signed-in user owns the project that this application was sent to.
+    function ownsApplication(appId) {
+      return authed()
+        && exists(/databases/$(database)/documents/applications/$(appId))
+        && ownsProject(get(/databases/$(database)/documents/applications/$(appId)).data.projectId);
+    }
 
     // ---- Opportunities -------------------------------------------------
     match /projects/{projectId} {
@@ -85,25 +103,44 @@ service cloud.firestore {
     match /applications/{appId} {
       // `get` on a missing doc must be allowed so "have I applied yet?" checks work
       // (a rule that dereferences a null `resource` would otherwise deny it).
-      allow get: if authed() && (resource == null || resource.data.studentUid == request.auth.uid);
-      allow list: if authed() && resource.data.studentUid == request.auth.uid;
+      // The project's client can also read applications sent to their own projects.
+      allow get: if authed() && (resource == null
+        || resource.data.studentUid == request.auth.uid
+        || ownsProject(resource.data.projectId));
+      allow list: if authed() && (resource.data.studentUid == request.auth.uid
+        || ownsProject(resource.data.projectId));
       allow create: if authed()
         && request.resource.data.studentUid == request.auth.uid
         && appId == request.auth.uid + '_' + request.resource.data.projectId
         && request.resource.data.status == 'Applied';
-      // Owner may edit their own application; studentUid stays put.
-      allow update: if authed()
-        && resource.data.studentUid == request.auth.uid
-        && unchanged('studentUid') && unchanged('projectId');
+      allow update: if authed() && (
+        // The student may edit their own application, but never its status.
+        (resource.data.studentUid == request.auth.uid
+          && unchanged('studentUid') && unchanged('projectId') && unchanged('status'))
+        // The project's client may move it through the pipeline: ONLY `status` may change.
+        || (ownsProject(resource.data.projectId)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+          && request.resource.data.status in ['Applied', 'Under Review', 'Shortlisted', 'Accepted', 'Rejected'])
+      );
       allow delete: if authed() && resource.data.studentUid == request.auth.uid;
     }
 
     // ---- Messages ---------------------------------------------------
     match /messages/{msgId} {
-      allow read: if authed() && resource.data.studentUid == request.auth.uid;
-      allow create: if authed()
-        && request.resource.data.studentUid == request.auth.uid
-        && request.resource.data.fromClient == false;
+      // The student on the thread, or the client who owns the project it is about, may read it.
+      // The applicationId branches let a thread be queried by applicationId (the live
+      // conversation view), which a studentUid-only check cannot prove for a query.
+      allow read: if authed() && (resource.data.studentUid == request.auth.uid
+        || isApplicant(resource.data.applicationId)
+        || ownsApplication(resource.data.applicationId));
+      allow create: if authed() && (
+        // Student -> client
+        (request.resource.data.studentUid == request.auth.uid
+          && request.resource.data.fromClient == false)
+        // Client -> student, only on an application sent to one of their own projects
+        || (request.resource.data.fromClient == true
+          && ownsApplication(request.resource.data.applicationId))
+      );
       allow update, delete: if false;
     }
 
