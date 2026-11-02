@@ -59,7 +59,7 @@ import com.skillbridge.app.ui.theme.Paper
 import com.skillbridge.app.utils.LocationUtils
 
 import java.util.Locale
-import com.maptiler.maptilersdk.map.LngLat
+import com.skillbridge.app.ui.components.LngLat
 
 @Composable
 fun ClientDiscoverScreen(

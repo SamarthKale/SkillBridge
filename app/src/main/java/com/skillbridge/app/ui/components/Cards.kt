@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,7 +53,12 @@ fun relativeTime(millis: Long): String {
 }
 
 @Composable
-fun OpportunityCard(opp: Opportunity, distanceText: String = "", onClick: () -> Unit) {
+fun OpportunityCard(
+    opp: Opportunity,
+    distanceText: String = "",
+    onViewMap: (() -> Unit)? = null,
+    onClick: () -> Unit
+) {
     OutlinedCardBox(onClick = onClick) {
         Column {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -78,10 +84,19 @@ fun OpportunityCard(opp: Opportunity, distanceText: String = "", onClick: () -> 
                 SkillChips(opp.skills.take(3))
             }
             Spacer(Modifier.height(8.dp))
-            Text(
-                "Posted ${relativeTime(opp.postedAt)}",
-                style = MaterialTheme.typography.labelMedium, color = Mute
-            )
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "Posted ${relativeTime(opp.postedAt)}",
+                    style = MaterialTheme.typography.labelMedium, color = Mute
+                )
+                if (onViewMap != null && opp.latitude != null && opp.longitude != null) {
+                    TextButton(onClick = onViewMap) { Text("📍 View on map") }
+                }
+            }
         }
     }
 }

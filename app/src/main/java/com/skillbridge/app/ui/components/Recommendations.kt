@@ -98,7 +98,11 @@ private fun ReasonsBox(reasons: List<String>, missing: List<String>) {
 }
 
 @Composable
-fun RecommendedProjectCard(rec: StudentRecommendation, onViewProject: () -> Unit) {
+fun RecommendedProjectCard(
+    rec: StudentRecommendation,
+    onViewProject: () -> Unit,
+    onViewMap: (() -> Unit)? = null
+) {
     val opp = rec.opportunity
     OutlinedCardBox(onClick = onViewProject) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -114,6 +118,10 @@ fun RecommendedProjectCard(rec: StudentRecommendation, onViewProject: () -> Unit
                 Pill(opp.category)
                 Spacer(Modifier.width(6.dp))
                 Text(opp.budget, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                if (onViewMap != null && opp.latitude != null && opp.longitude != null) {
+                    Spacer(Modifier.weight(1f))
+                    androidx.compose.material3.TextButton(onClick = onViewMap) { Text("📍 View on map") }
+                }
             }
             ReasonsBox(rec.reasons, rec.missingSkills)
         }
@@ -131,7 +139,7 @@ fun CandidateRecommendationCard(
     OutlinedCardBox(onClick = onViewProfile) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Avatar(c.name.ifBlank { "?" }, size = 40)
+                Avatar(c.name.ifBlank { "?" }, size = 40, photo = c.photoUrl)
                 Spacer(Modifier.width(10.dp))
                 Column(Modifier.weight(1f)) {
                     Text(c.name, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)

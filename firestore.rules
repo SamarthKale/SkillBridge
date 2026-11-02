@@ -69,6 +69,18 @@ service cloud.firestore {
       allow delete: if isOwner(uid);
     }
 
+    // ---- Resumes (base64 file; Storage needs the paid Blaze plan) -----
+    // One per user. Any signed-in user may read (clients review applicants);
+    // only the owner may write, and the file is capped at ~700 KB of base64.
+    match /resumes/{uid} {
+      allow read: if authed();
+      allow create, update: if isOwner(uid)
+        && request.resource.data.uid == uid
+        && request.resource.data.dataBase64 is string
+        && request.resource.data.dataBase64.size() < 700000;
+      allow delete: if isOwner(uid);
+    }
+
     // ---- Applications --------------------------------------------------
     match /applications/{appId} {
       // `get` on a missing doc must be allowed so "have I applied yet?" checks work

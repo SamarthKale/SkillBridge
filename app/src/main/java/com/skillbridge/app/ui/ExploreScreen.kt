@@ -17,7 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.maptiler.maptilersdk.map.LngLat
+import com.skillbridge.app.ui.components.LngLat
 import com.skillbridge.app.data.Category
 import com.skillbridge.app.data.Opportunity
 import com.skillbridge.app.recommendation.RecommendationCache
@@ -31,7 +31,11 @@ import java.util.Locale
 private fun budgetvalue(s: String): Int = s.filter { it.isDigit() }.toIntOrNull() ?: 0
 
 @Composable
-fun ExploreScreen(onOpenProject: (String) -> Unit) {
+fun ExploreScreen(
+    onOpenProject: (String) -> Unit,
+    onOpenNearby: () -> Unit = {},
+    onViewMap: (String) -> Unit = {}
+) {
     val context = LocalContext.current
     val all by rememberOpportunities()
     val profile by rememberMyProfile()
@@ -96,6 +100,8 @@ fun ExploreScreen(onOpenProject: (String) -> Unit) {
 
             val matchesDistance = when {
                 distanceFilter == "Anywhere" -> true
+                // Remote jobs only carry a placeholder base city, so they never match a distance filter
+                o.remote -> false
                 // Distance filter active, student location known, project has coordinates
                 studentLat != null && studentLon != null && o.latitude != null && o.longitude != null -> {
                     val dist = LocationUtils.calculateDistanceKm(studentLat!!, studentLon!!, o.latitude, o.longitude)
@@ -191,8 +197,11 @@ fun ExploreScreen(onOpenProject: (String) -> Unit) {
             item {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Text("Distance", style = MaterialTheme.typography.labelMedium, color = Mute)
-                    TextButton(onClick = { isMapView = !isMapView }) {
-                        Text(if (isMapView) "Show List" else "Show Map")
+                    Row {
+                        TextButton(onClick = onOpenNearby) { Text("Nearby jobs") }
+                        TextButton(onClick = { isMapView = !isMapView }) {
+                            Text(if (isMapView) "Show List" else "Show Map")
+                        }
                     }
                 }
                 SelectableChips(
@@ -294,7 +303,7 @@ fun ExploreScreen(onOpenProject: (String) -> Unit) {
                                 distanceText = String.format(Locale.getDefault(), "📍 %.1f km away", dist)
                             }
                             Box(modifier = Modifier.align(Alignment.BottomCenter).padding(8.dp)) {
-                                OpportunityCard(opp, distanceText) { onOpenProject(opp.id) }
+                                OpportunityCard(opp, distanceText, onViewMap = { onViewMap(opp.id) }) { onOpenProject(opp.id) }
                             }
                         }
                     }
@@ -308,7 +317,8 @@ fun ExploreScreen(onOpenProject: (String) -> Unit) {
                         if (sortMode == "Recommended For You" && rec != null) {
                             RecommendedProjectCard(
                                 rec = rec,
-                                onViewProject = { onOpenProject(opp.id) }
+                                onViewProject = { onOpenProject(opp.id) },
+                                onViewMap = { onViewMap(opp.id) }
                             )
                         } else {
                             var distanceText = ""
@@ -316,7 +326,7 @@ fun ExploreScreen(onOpenProject: (String) -> Unit) {
                                 val dist = LocationUtils.calculateDistanceKm(studentLat!!, studentLon!!, opp.latitude, opp.longitude)
                                 distanceText = String.format(Locale.getDefault(), "📍 %.1f km away", dist)
                             }
-                            OpportunityCard(opp, distanceText) { onOpenProject(opp.id) }
+                            OpportunityCard(opp, distanceText, onViewMap = { onViewMap(opp.id) }) { onOpenProject(opp.id) }
                         }
                     }
                 }

@@ -59,7 +59,9 @@ fun HomeScreen(
     onOpenApplication: (String) -> Unit,
     onOpenNotifications: () -> Unit,
     onOpenAiAssistant: () -> Unit = {},
-    onOpenProfile: () -> Unit = {}
+    onOpenNearby: () -> Unit = {},
+    onOpenProfile: () -> Unit = {},
+    onViewMap: (String) -> Unit = {}
 ) {
     val profile by rememberMyProfile()
     val apps by rememberMyApplications()
@@ -121,6 +123,7 @@ fun HomeScreen(
             isClient = false,
             onClick = onOpenAiAssistant
         )
+        NearbyBanner(onClick = onOpenNearby)
 
         Spacer(Modifier.height(2.dp))
         SectionHeader("My Progress")
@@ -191,10 +194,31 @@ fun HomeScreen(
             recommended.forEach { rec ->
                 RecommendedProjectCard(
                     rec = rec,
-                    onViewProject = { onOpenProject(rec.opportunity.id) }
+                    onViewProject = { onOpenProject(rec.opportunity.id) },
+                    onViewMap = { onViewMap(rec.opportunity.id) }
                 )
             }
         }
     }
 }
 
+
+@Composable
+private fun NearbyBanner(onClick: () -> Unit) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .background(Paper, RoundedCornerShape(12.dp))
+            .border(1.dp, Line, RoundedCornerShape(12.dp))
+            .clickable(onClick = onClick)
+            .padding(14.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text("Nearby Jobs", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
+            Spacer(Modifier.height(2.dp))
+            Text("See projects around you on the map", style = MaterialTheme.typography.bodySmall, color = Mute)
+        }
+        Text(">", style = MaterialTheme.typography.titleLarge, color = Ink)
+    }
+}

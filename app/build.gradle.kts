@@ -24,7 +24,6 @@ android {
         if (localPropertiesFile.exists()) {
             localPropertiesFile.inputStream().use { stream -> localProperties.load(stream) }
         }
-        buildConfigField("String", "MAPTILER_API_KEY", "\"${localProperties.getProperty("MAPTILER_API_KEY", "")}\"")
         buildConfigField("String", "GEMINI_API_KEY", "\"${localProperties.getProperty("GEMINI_API_KEY", "")}\"")
     }
 
@@ -99,9 +98,6 @@ dependencies {
     // --------------------------------------------------
 
     implementation("com.google.android.gms:play-services-location:21.0.1")
-
-    // MapTiler
-    implementation("com.maptiler:maptiler-sdk-kotlin:2.0.0")
 
     // Gson for SQLite JSON serialization
     implementation("com.google.code.gson:gson:2.11.0")

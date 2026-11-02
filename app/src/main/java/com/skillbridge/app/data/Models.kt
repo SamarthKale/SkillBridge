@@ -68,6 +68,19 @@ data class Profile(
     val updatedAt: Long = 0L
 )
 
+/**
+ * An uploaded resume file (PDF/Word, <= 500 KB). Collection: `resumes`, document id == uid.
+ * Stored as base64 in Firestore because Cloud Storage needs the paid Blaze plan.
+ */
+data class ResumeFile(
+    val uid: String = "",
+    val fileName: String = "",
+    val mimeType: String = "",
+    val sizeBytes: Long = 0L,
+    val dataBase64: String = "",
+    val updatedAt: Long = 0L
+)
+
 /** A student's application. Collection: `applications`, id == "{studentUid}_{projectId}". */
 data class Application(
     @DocumentId val id: String = "",

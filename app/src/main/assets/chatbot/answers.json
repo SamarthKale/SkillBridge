@@ -1,0 +1,1832 @@
+{
+  "botName": "Bridgey",
+  "welcome": "Hi {name}! I'm Bridgey, your SkillBridge assistant. Ask me about finding jobs near you, applying, application statuses, messaging, your profile, or freelancing tips.",
+  "fallbacks": [
+    "Hmm, I'm not sure about that one yet. Try asking about nearby jobs, applying, application status, your profile, or freelancing tips.",
+    "I didn't quite catch that. I can help with finding projects, writing a great application, understanding statuses, messaging and more - what would you like to know?",
+    "That's outside what I know right now. Want to try one of the suggestions below?"
+  ],
+  "suggestions": {
+    "student": [
+      "How do I find jobs near me?",
+      "How do I apply?",
+      "What do the statuses mean?",
+      "Tips for my first project",
+      "How do I improve my profile?",
+      "Is it safe to work with clients?"
+    ],
+    "client": [
+      "How do I post a project?",
+      "How do I find students?",
+      "How do I pick the right student?",
+      "How do I set a budget?",
+      "How do I message a student?"
+    ]
+  },
+  "entries": [
+    {
+      "id": "greeting",
+      "q": [
+        "hi",
+        "hello",
+        "hey",
+        "hii",
+        "yo",
+        "good morning",
+        "good evening",
+        "good afternoon",
+        "namaste",
+        "sup",
+        "howdy"
+      ],
+      "a": "Hey {name}! Great to see you. What can I help with today - jobs near you, applications, or your profile?",
+      "f": [
+        "How do I find jobs near me?",
+        "How do I apply?",
+        "Improve my profile"
+      ]
+    },
+    {
+      "id": "how-are-you",
+      "q": [
+        "how are you",
+        "how r u",
+        "how are things",
+        "whats up",
+        "what's up",
+        "how is it going"
+      ],
+      "a": "I'm doing great, thanks for asking! I'm ready to help you land your next freelance gig. What do you need?"
+    },
+    {
+      "id": "who-are-you",
+      "q": [
+        "who are you",
+        "what are you",
+        "your name",
+        "are you real",
+        "are you human",
+        "are you ai",
+        "are you a bot",
+        "are you chatgpt"
+      ],
+      "a": "I'm Bridgey, SkillBridge's in-app assistant. I answer questions about using the app and freelancing as a student. I'm a simple built-in helper, so I work best with clear, specific questions."
+    },
+    {
+      "id": "what-can-you-do",
+      "q": [
+        "what can you do",
+        "help",
+        "help me",
+        "what do you do",
+        "capabilities",
+        "features",
+        "how can you help",
+        "commands",
+        "menu"
+      ],
+      "a": "I can help with: finding nearby jobs on the map, searching and filtering projects, writing applications, understanding your application status, messaging clients, improving your profile, pricing your work, staying safe from scams, and general freelancing tips. Just ask!",
+      "f": [
+        "Nearby jobs",
+        "How do I apply?",
+        "Freelancing tips"
+      ]
+    },
+    {
+      "id": "thanks",
+      "q": [
+        "thanks",
+        "thank you",
+        "thx",
+        "ty",
+        "thankyou",
+        "appreciate it",
+        "great help",
+        "awesome",
+        "cool thanks"
+      ],
+      "a": "You're welcome! Anything else I can help you with?"
+    },
+    {
+      "id": "bye",
+      "q": [
+        "bye",
+        "goodbye",
+        "see you",
+        "see ya",
+        "cya",
+        "good night",
+        "talk later",
+        "gtg"
+      ],
+      "a": "Bye {name}! Good luck out there - I'll be here whenever you need me."
+    },
+    {
+      "id": "joke",
+      "q": [
+        "joke",
+        "make me laugh",
+        "funny",
+        "tell me a joke",
+        "something funny"
+      ],
+      "a": "Why did the freelancer bring a ladder to the meeting? They heard the client wanted to take things to the next level. 😄"
+    },
+    {
+      "id": "motivation",
+      "q": [
+        "motivate me",
+        "motivation",
+        "i feel stuck",
+        "i am sad",
+        "feeling low",
+        "demotivated",
+        "give up",
+        "discouraged",
+        "inspire me"
+      ],
+      "a": "Every freelancer you admire started with zero reviews and a rough first proposal. Keep applying, keep improving each pitch, and celebrate small wins - a shortlist is progress. You've got this!"
+    },
+    {
+      "id": "about-app",
+      "q": [
+        "what is skillbridge",
+        "about skillbridge",
+        "about this app",
+        "what is this app",
+        "purpose of app",
+        "tell me about the app"
+      ],
+      "a": "SkillBridge connects college students with freelance opportunities posted by clients. You build a profile, browse or search projects, apply with an intro and resume link, track your application through the pipeline, and chat with the client once you're shortlisted or accepted."
+    },
+    {
+      "id": "is-free",
+      "q": [
+        "is it free",
+        "cost",
+        "price of app",
+        "subscription",
+        "do i have to pay",
+        "any fees",
+        "commission",
+        "platform fee",
+        "charges"
+      ],
+      "a": "SkillBridge is free for students to join, browse and apply. Payment terms for a project are agreed between you and the client."
+    },
+    {
+      "id": "signup",
+      "q": [
+        "sign up",
+        "signup",
+        "register",
+        "create account",
+        "new account",
+        "join",
+        "how to join",
+        "make an account"
+      ],
+      "a": "Tap 'Create account' on the login screen, choose whether you're a Student or a Client, enter your name, email and password, then complete your profile. It takes about two minutes.",
+      "go": "profile"
+    },
+    {
+      "id": "login-problem",
+      "q": [
+        "cant login",
+        "can't login",
+        "cannot login",
+        "login problem",
+        "login failed",
+        "unable to login",
+        "wrong password",
+        "login error",
+        "sign in problem",
+        "unable to sign in"
+      ],
+      "a": "Double-check your email and password (passwords are case-sensitive). If you can't remember it, use 'Forgot password' on the login screen to get a reset email. Also make sure you have an internet connection."
+    },
+    {
+      "id": "forgot-password",
+      "q": [
+        "forgot password",
+        "reset password",
+        "change password",
+        "lost password",
+        "password reset",
+        "forgot my password"
+      ],
+      "a": "On the login screen tap 'Forgot password', enter your email, and we'll send a reset link. Check your spam folder if it doesn't arrive in a few minutes."
+    },
+    {
+      "id": "logout",
+      "q": [
+        "logout",
+        "log out",
+        "sign out",
+        "signout"
+      ],
+      "a": "Open the Profile tab and tap 'Log out' at the bottom of the screen.",
+      "go": "profile"
+    },
+    {
+      "id": "delete-account",
+      "q": [
+        "delete account",
+        "remove account",
+        "close account",
+        "deactivate",
+        "delete my data"
+      ],
+      "a": "Account deletion isn't available inside the app yet. If you need your data removed, contact the SkillBridge team and we'll take care of it."
+    },
+    {
+      "id": "change-email",
+      "q": [
+        "change email",
+        "update email",
+        "new email",
+        "different email"
+      ],
+      "a": "Your sign-in email is tied to your account and can't be changed from the app right now. You can create a new account with the new address if needed."
+    },
+    {
+      "id": "profile-setup",
+      "q": [
+        "profile setup",
+        "set up profile",
+        "complete profile",
+        "fill profile",
+        "edit profile",
+        "update profile",
+        "change profile",
+        "my profile"
+      ],
+      "a": "Go to the Profile tab and tap 'Edit profile'. Fill in your degree, college, graduation year, skills, experience, a short bio and your resume link. A complete profile gets noticed far more by clients.",
+      "go": "profile",
+      "f": [
+        "Improve my profile",
+        "Write a good bio"
+      ]
+    },
+    {
+      "id": "profile-tips",
+      "q": [
+        "improve profile",
+        "better profile",
+        "profile tips",
+        "stand out",
+        "get noticed",
+        "profile strength",
+        "profile complete",
+        "attract clients",
+        "make my profile better",
+        "improve my profile"
+      ],
+      "a": "Tips for a strong profile: 1) add 5-8 real skills, 2) write a 2-3 line bio about what you can deliver, 3) add a resume or portfolio link, 4) set your location so you appear in nearby searches, and 5) mention any projects, internships or coursework. Profiles with skills and a bio also get better AI match scores.",
+      "go": "profile"
+    },
+    {
+      "id": "bio",
+      "q": [
+        "bio",
+        "write a bio",
+        "about me",
+        "describe myself",
+        "introduce myself",
+        "profile description",
+        "headline",
+        "write a good bio",
+        "good bio"
+      ],
+      "a": "A good bio is short and outcome-focused: 'Third-year CS student who builds clean Android apps in Kotlin. Delivered 3 college projects and an internship app. Available 15 hrs/week.' Say what you do, one proof point, and your availability."
+    },
+    {
+      "id": "skills-to-add",
+      "q": [
+        "which skills",
+        "what skills",
+        "add skills",
+        "skills to add",
+        "skills list",
+        "best skills",
+        "skills in demand",
+        "most demanded skills",
+        "popular skills"
+      ],
+      "a": "List skills you can actually deliver. In-demand ones on freelance boards: web development (React, HTML/CSS), Android/Flutter, Python, data analysis (Excel, SQL), UI/UX (Figma), graphic design (Canva, Photoshop), content writing, SEO, social media and video editing. Matching your skills to project requirements raises your match score."
+    },
+    {
+      "id": "resume-link",
+      "q": [
+        "resume",
+        "cv",
+        "resume link",
+        "upload resume",
+        "attach resume",
+        "resume url",
+        "where to put resume",
+        "curriculum vitae",
+        "resume format"
+      ],
+      "a": "SkillBridge uses a resume *link* rather than a file upload. Upload your resume to Google Drive (or similar), set sharing to 'Anyone with the link can view', and paste that link in your profile and when applying."
+    },
+    {
+      "id": "resume-tips",
+      "q": [
+        "resume tips",
+        "make a resume",
+        "improve resume",
+        "resume help",
+        "good resume",
+        "build resume",
+        "resume advice"
+      ],
+      "a": "Keep your resume to one page: contact info, 2-line summary, skills, projects (with a link and what you built), education, and any internships. Lead with projects if you have little experience, use action verbs, and add numbers where possible (e.g. 'reduced load time by 40%')."
+    },
+    {
+      "id": "profile-photo",
+      "q": [
+        "profile photo",
+        "profile picture",
+        "photo",
+        "avatar",
+        "display picture",
+        "dp",
+        "upload photo"
+      ],
+      "a": "Your profile shows an avatar with your initials by default. A clear, friendly photo link in your profile helps build trust with clients."
+    },
+    {
+      "id": "explore",
+      "q": [
+        "explore",
+        "browse projects",
+        "browse jobs",
+        "find projects",
+        "find work",
+        "find jobs",
+        "look for jobs",
+        "available projects",
+        "opportunities",
+        "show me projects",
+        "job listings"
+      ],
+      "a": "Open the Explore tab to browse every open project. You can search by title, skill or company, filter by category, budget and distance, and sort by newest or 'Recommended For You'.",
+      "go": "explore"
+    },
+    {
+      "id": "search",
+      "q": [
+        "search",
+        "find specific",
+        "search bar",
+        "look up",
+        "search for project",
+        "search by skill"
+      ],
+      "a": "Use the search bar at the top of Explore - it matches project titles, company names and required skills. Try searching a skill like 'Figma' or 'Python'.",
+      "go": "explore"
+    },
+    {
+      "id": "filters",
+      "q": [
+        "filter",
+        "filters",
+        "sort",
+        "sorting",
+        "narrow down",
+        "refine",
+        "category filter",
+        "budget filter"
+      ],
+      "a": "In Explore you can filter by category (Development, Design, Writing, Marketing, Data, Other), budget band, and distance, and sort by newest or by how well a project matches you.",
+      "go": "explore"
+    },
+    {
+      "id": "categories",
+      "q": [
+        "categories",
+        "types of projects",
+        "kinds of work",
+        "what work",
+        "what jobs",
+        "project types",
+        "what kind of projects"
+      ],
+      "a": "Projects fall into six categories: Development, Design, Writing, Marketing, Data, and Other. Use the category chips in Explore to focus on the one that fits you."
+    },
+    {
+      "id": "nearby",
+      "q": [
+        "nearby",
+        "near me",
+        "nearby jobs",
+        "close to me",
+        "local jobs",
+        "jobs around me",
+        "projects near me",
+        "around me",
+        "closest jobs",
+        "local work",
+        "in my city",
+        "in my area",
+        "on-site",
+        "onsite",
+        "offline jobs",
+        "find jobs near me",
+        "jobs close to me",
+        "projects close to me",
+        "work near me"
+      ],
+      "a": "Open the Nearby Jobs screen: it shows an OpenStreetMap with red pins for projects around you, a blue dot for your location, and a list sorted by distance. Pick a radius (5-100 km) or choose a city if your GPS isn't available.",
+      "go": "nearby",
+      "f": [
+        "Why can't I see my location?",
+        "How does the map work?"
+      ]
+    },
+    {
+      "id": "map",
+      "q": [
+        "map",
+        "maps",
+        "how does the map work",
+        "openstreetmap",
+        "osm",
+        "show map",
+        "map view",
+        "pins",
+        "red pin",
+        "blue dot",
+        "marker",
+        "markers"
+      ],
+      "a": "The map is powered by OpenStreetMap. Red pins are projects, the blue dot is you. Tap a pin to see the project and open its details. You can pinch to zoom and drag to explore. Remote projects don't have a pin because they can be done from anywhere.",
+      "go": "nearby"
+    },
+    {
+      "id": "location-permission",
+      "q": [
+        "location permission",
+        "allow location",
+        "enable location",
+        "gps",
+        "location not working",
+        "cant see my location",
+        "can't see my location",
+        "location unavailable",
+        "location off",
+        "why location",
+        "turn on location",
+        "my location"
+      ],
+      "a": "Allow location when the app asks, and make sure GPS/Location is switched on in your phone settings. On an emulator, set a location in the extended controls. If it still doesn't work, pick your city from the chips on the Nearby screen instead.",
+      "go": "nearby"
+    },
+    {
+      "id": "location-privacy",
+      "q": [
+        "location privacy",
+        "is my location safe",
+        "who sees my location",
+        "location shared",
+        "track me",
+        "tracking",
+        "privacy location",
+        "exact location"
+      ],
+      "a": "Your exact GPS position is only used on your device to calculate distances. When your location is shown to others it is rounded to roughly a 1 km area so your precise position stays private."
+    },
+    {
+      "id": "distance-filter",
+      "q": [
+        "distance",
+        "radius",
+        "km",
+        "how far",
+        "within km",
+        "distance filter",
+        "kilometre",
+        "kilometer",
+        "how far is the job"
+      ],
+      "a": "Pick a radius (5, 10, 25, 50 or 100 km) on the Nearby screen or the distance chips in Explore. Distances are straight-line from your current location to the project's location.",
+      "go": "nearby"
+    },
+    {
+      "id": "remote",
+      "q": [
+        "remote",
+        "work from home",
+        "wfh",
+        "online work",
+        "work remotely",
+        "remote jobs",
+        "virtual",
+        "anywhere"
+      ],
+      "a": "Many projects are Remote, meaning you can do them from anywhere. Look for 'Remote' on the project card. Remote projects don't show on the map since they have no fixed location.",
+      "go": "explore"
+    },
+    {
+      "id": "hybrid",
+      "q": [
+        "hybrid",
+        "partly remote",
+        "office and remote",
+        "hybrid job"
+      ],
+      "a": "Hybrid projects mix remote work with occasional on-site days at the client's city. They appear on the map at that city so you can judge the commute."
+    },
+    {
+      "id": "recommended",
+      "q": [
+        "recommended",
+        "recommendation",
+        "recommend",
+        "match score",
+        "ai match",
+        "best match",
+        "matched",
+        "for you",
+        "suggested jobs",
+        "personalized",
+        "personalised",
+        "suggest me jobs",
+        "which job suits me"
+      ],
+      "a": "'Recommended For You' ranks projects by how well they fit your skills, interests and location - shown as a match percentage with reasons. Open the AI Match Assistant to see your top matches.",
+      "go": "matches"
+    },
+    {
+      "id": "apply",
+      "q": [
+        "apply",
+        "how to apply",
+        "how do i apply",
+        "submit application",
+        "send application",
+        "apply for job",
+        "apply for project",
+        "application process",
+        "applying"
+      ],
+      "a": "Open a project, tap 'Apply', write a short intro explaining why you're a good fit, paste your resume link, and submit. You'll see a confirmation and can track it under the Applications tab.",
+      "go": "explore",
+      "f": [
+        "Write a good intro",
+        "Can I apply twice?"
+      ]
+    },
+    {
+      "id": "good-intro",
+      "q": [
+        "intro",
+        "write intro",
+        "cover letter",
+        "proposal",
+        "pitch",
+        "application message",
+        "what to write",
+        "write a proposal",
+        "good application",
+        "application tips",
+        "stand out application",
+        "write application",
+        "good intro",
+        "write a good intro"
+      ],
+      "a": "A winning intro is 4-6 lines: 1) greet the client and name the project, 2) say exactly how you'll solve their problem, 3) share one relevant project or skill, 4) mention your availability and timeline, 5) close politely. Avoid copy-paste messages - clients can tell."
+    },
+    {
+      "id": "intro-template",
+      "q": [
+        "template",
+        "sample intro",
+        "example intro",
+        "example proposal",
+        "sample cover letter",
+        "intro example",
+        "proposal example"
+      ],
+      "a": "Try: 'Hi! I'm {name}, a student with hands-on experience in [skill]. I've built [relevant project] and can deliver your [project] in [X days]. I'm available [hours/week] and happy to share samples. My resume is linked below. Thanks for your time!'"
+    },
+    {
+      "id": "apply-twice",
+      "q": [
+        "apply twice",
+        "apply again",
+        "apply multiple times",
+        "duplicate application",
+        "already applied",
+        "reapply",
+        "re-apply"
+      ],
+      "a": "You can apply to each project only once - the app prevents duplicates. If you already applied, track it in the Applications tab. You can message the client once you're shortlisted or accepted.",
+      "go": "applications"
+    },
+    {
+      "id": "withdraw",
+      "q": [
+        "withdraw",
+        "cancel application",
+        "delete application",
+        "undo application",
+        "remove application",
+        "retract"
+      ],
+      "a": "Withdrawing isn't supported in the app yet. If you've changed your mind, message the client (once messaging is unlocked) and let them know politely."
+    },
+    {
+      "id": "how-many-apply",
+      "q": [
+        "how many jobs",
+        "how many projects should i apply",
+        "how many applications",
+        "apply to many",
+        "limit applications",
+        "application limit"
+      ],
+      "a": "There's no strict limit. Quality beats quantity though - aim for a few well-tailored applications a day rather than dozens of generic ones."
+    },
+    {
+      "id": "status-overview",
+      "q": [
+        "status",
+        "statuses",
+        "application status",
+        "what do the statuses mean",
+        "status meaning",
+        "pipeline",
+        "stages",
+        "application stages",
+        "track application",
+        "track my application",
+        "my applications"
+      ],
+      "a": "Applications move through: Applied -> Under Review -> Shortlisted -> Accepted. Or Applied -> Rejected. Open the Applications tab to see where each one stands in the pipeline.",
+      "go": "applications"
+    },
+    {
+      "id": "status-applied",
+      "q": [
+        "applied status",
+        "what is applied",
+        "status applied",
+        "just applied"
+      ],
+      "a": "'Applied' means your application is submitted and waiting for the client to open it. Nothing more to do right now - sit tight!"
+    },
+    {
+      "id": "status-review",
+      "q": [
+        "under review",
+        "being reviewed",
+        "in review",
+        "review status",
+        "status review"
+      ],
+      "a": "'Under Review' means the client has opened your application and is evaluating candidates. It's a good sign - you're being considered."
+    },
+    {
+      "id": "status-shortlisted",
+      "q": [
+        "shortlisted",
+        "shortlist",
+        "short listed",
+        "status shortlisted",
+        "i got shortlisted"
+      ],
+      "a": "Congrats! 'Shortlisted' means you're among the client's top candidates. Messaging unlocks at this stage, so reply quickly and professionally.",
+      "go": "messages"
+    },
+    {
+      "id": "status-accepted",
+      "q": [
+        "accepted",
+        "i got accepted",
+        "status accepted",
+        "hired",
+        "i got the job",
+        "selected",
+        "won the project"
+      ],
+      "a": "Amazing - you got the project! Message the client to confirm scope, timeline, deliverables and payment terms before you start.",
+      "go": "messages"
+    },
+    {
+      "id": "status-rejected",
+      "q": [
+        "rejected",
+        "rejection",
+        "i got rejected",
+        "not selected",
+        "declined",
+        "status rejected",
+        "why rejected",
+        "turned down"
+      ],
+      "a": "Rejections are normal in freelancing, even for experienced pros. Tailor your next intro, strengthen your profile, and keep applying. Each application sharpens your pitch."
+    },
+    {
+      "id": "response-time",
+      "q": [
+        "how long",
+        "when will i hear back",
+        "no response",
+        "client not replying",
+        "waiting for reply",
+        "response time",
+        "no reply",
+        "ghosted",
+        "ghosting",
+        "hearing back",
+        "how long to hear"
+      ],
+      "a": "Response times vary - some clients reply within a day, others take a week. If you're still 'Applied' after several days, keep applying to other projects. Don't wait on one opportunity."
+    },
+    {
+      "id": "messaging",
+      "q": [
+        "message",
+        "messages",
+        "chat",
+        "talk to client",
+        "contact client",
+        "message client",
+        "send message",
+        "messaging",
+        "conversation",
+        "dm",
+        "inbox"
+      ],
+      "a": "Messaging unlocks when your application reaches Shortlisted or Accepted. Then open the Messages tab to chat with the client.",
+      "go": "messages"
+    },
+    {
+      "id": "messaging-locked",
+      "q": [
+        "cant message",
+        "can't message",
+        "messaging locked",
+        "why cant i chat",
+        "why can't i message",
+        "chat locked",
+        "message disabled",
+        "no chat option",
+        "unlock messaging",
+        "unlock chat"
+      ],
+      "a": "To prevent spam, chat only opens once a client shortlists or accepts your application. Until then, make your application and profile as strong as you can."
+    },
+    {
+      "id": "message-etiquette",
+      "q": [
+        "message etiquette",
+        "how to talk to client",
+        "professional message",
+        "chat tips",
+        "talk professionally",
+        "reply to client",
+        "client communication",
+        "communicate with client"
+      ],
+      "a": "Be prompt, polite and specific. Confirm scope and deadlines in writing, ask clarifying questions early, share progress updates, and never promise what you can't deliver."
+    },
+    {
+      "id": "notifications",
+      "q": [
+        "notification",
+        "notifications",
+        "alerts",
+        "bell",
+        "updates",
+        "not getting notifications"
+      ],
+      "a": "Tap the bell icon on the Home screen to see updates like status changes and new messages. Unread ones are highlighted."
+    },
+    {
+      "id": "payment",
+      "q": [
+        "payment",
+        "get paid",
+        "how do i get paid",
+        "payout",
+        "money",
+        "when will i be paid",
+        "payment method",
+        "paid",
+        "pay me",
+        "salary",
+        "earnings",
+        "withdraw money"
+      ],
+      "a": "SkillBridge helps you find and win work; payment terms are agreed directly with the client. Confirm the amount, milestones and payment method in chat before you start, and keep records of what was agreed."
+    },
+    {
+      "id": "pricing",
+      "q": [
+        "how much to charge",
+        "pricing",
+        "rates",
+        "my rate",
+        "what to charge",
+        "set my price",
+        "quote",
+        "how to price",
+        "price my work",
+        "hourly rate",
+        "charge per hour",
+        "fixed price",
+        "rate card"
+      ],
+      "a": "As a student, start by estimating hours x a fair hourly rate (₹200-600/hr is common for beginners, more for specialised skills), then compare with the project's listed budget. Quote fixed prices for clear tasks and add a buffer for revisions."
+    },
+    {
+      "id": "negotiate",
+      "q": [
+        "negotiate",
+        "negotiation",
+        "ask for more",
+        "budget too low",
+        "low budget",
+        "low pay",
+        "underpaid",
+        "raise price",
+        "counter offer",
+        "increase budget"
+      ],
+      "a": "If the budget is low, politely propose a reduced scope or a higher fee for extras. Explain the value you bring. Never undercut yourself so much you resent the work."
+    },
+    {
+      "id": "budget-meaning",
+      "q": [
+        "budget",
+        "what does budget mean",
+        "project budget",
+        "budget range",
+        "fixed budget",
+        "budget shown",
+        "rs",
+        "inr",
+        "rupees"
+      ],
+      "a": "The budget on a project card is the total the client plans to pay for the whole project. Use the budget filter in Explore (Under 10k, 10k-20k, Over 20k) to narrow things down.",
+      "go": "explore"
+    },
+    {
+      "id": "first-project",
+      "q": [
+        "first project",
+        "first job",
+        "beginner",
+        "just starting",
+        "new to freelancing",
+        "no experience",
+        "never freelanced",
+        "start freelancing",
+        "how to start",
+        "begin freelancing",
+        "fresher",
+        "getting started",
+        "freelancing tips",
+        "tips for my first project",
+        "freelance tips",
+        "tips for freelancing"
+      ],
+      "a": "Start with small, clearly-scoped projects (₹2-10k) in a skill you're confident in. Deliver early, communicate often, and ask for feedback. Your first few successful projects become your portfolio. Build credibility before aiming high.",
+      "f": [
+        "Build a portfolio",
+        "Tips for no experience"
+      ]
+    },
+    {
+      "id": "no-experience",
+      "q": [
+        "tips for no experience",
+        "no experience",
+        "zero experience",
+        "dont have experience",
+        "don't have experience",
+        "inexperienced",
+        "lack of experience",
+        "how to get first client",
+        "first client"
+      ],
+      "a": "No experience? Show projects instead: college assignments, personal apps, mock designs, open-source contributions, or volunteer work for a club. Put links in your resume and intro. Clients care about proof you can deliver."
+    },
+    {
+      "id": "portfolio",
+      "q": [
+        "portfolio",
+        "build portfolio",
+        "show my work",
+        "samples",
+        "work samples",
+        "past work",
+        "github",
+        "behance",
+        "dribbble",
+        "personal website",
+        "portfolio website",
+        "build a portfolio"
+      ],
+      "a": "Build a simple portfolio: 3-5 best projects with a screenshot, a one-line problem/solution, tools used, and a live or GitHub link. Use GitHub for code, Behance/Dribbble for design, Medium or a Google Doc for writing samples."
+    },
+    {
+      "id": "time-management",
+      "q": [
+        "time management",
+        "balance studies",
+        "balance college",
+        "manage time",
+        "study and work",
+        "exams",
+        "busy with college",
+        "deadline pressure",
+        "juggle",
+        "work-life",
+        "schedule"
+      ],
+      "a": "Block fixed freelance hours around classes, be honest about your availability in your intro, pad deadlines by 20%, and avoid taking work during exam weeks. Communicate early if something slips."
+    },
+    {
+      "id": "deadlines",
+      "q": [
+        "deadline",
+        "deadlines",
+        "missed deadline",
+        "late delivery",
+        "running late",
+        "extension",
+        "need more time",
+        "delay"
+      ],
+      "a": "If you might miss a deadline, tell the client as early as possible with a revised date and what you'll deliver first. Clients forgive delays far more easily than silence."
+    },
+    {
+      "id": "scope-creep",
+      "q": [
+        "scope creep",
+        "extra work",
+        "client keeps adding",
+        "more revisions",
+        "unlimited revisions",
+        "additional work",
+        "changing requirements",
+        "revisions"
+      ],
+      "a": "Agree on scope and a set number of revisions up front. When a request goes beyond that, politely say it's outside the original scope and offer a quote for the extra work."
+    },
+    {
+      "id": "scam",
+      "q": [
+        "scam",
+        "fraud",
+        "fake client",
+        "fake job",
+        "is it safe",
+        "safe to work",
+        "suspicious",
+        "cheated",
+        "trust client",
+        "security",
+        "legit",
+        "legitimate",
+        "unsafe",
+        "fake"
+      ],
+      "a": "Stay safe: keep chats inside the app, never pay money to get a job, avoid clients who push you off-platform immediately, be wary of unrealistic pay, and never share bank/OTP details. Agree on milestones so you're paid for completed work. Report anything suspicious to the SkillBridge team."
+    },
+    {
+      "id": "red-flags",
+      "q": [
+        "red flags",
+        "warning signs",
+        "bad client",
+        "how to spot a bad client",
+        "client red flags",
+        "avoid clients",
+        "toxic client"
+      ],
+      "a": "Red flags: vague scope, pressure to start free 'trial' work, refusing to discuss payment, unrealistic deadlines, asking for personal/bank details, or being rude in the first messages. Trust your gut and walk away if it feels off."
+    },
+    {
+      "id": "free-work",
+      "q": [
+        "free work",
+        "unpaid",
+        "test project",
+        "trial task",
+        "work for free",
+        "exposure",
+        "free sample",
+        "unpaid internship"
+      ],
+      "a": "Be careful with unpaid trials. A tiny paid test or showing your existing portfolio is fair; delivering a full free project is not. You should be paid for your time."
+    },
+    {
+      "id": "contract",
+      "q": [
+        "contract",
+        "agreement",
+        "terms",
+        "written agreement",
+        "nda",
+        "legal",
+        "terms of work",
+        "invoice",
+        "invoicing"
+      ],
+      "a": "Even for small projects, write down the scope, deliverables, deadline, price and payment schedule in the chat (or a short doc). For bigger jobs, send a simple invoice when you deliver."
+    },
+    {
+      "id": "taxes",
+      "q": [
+        "tax",
+        "taxes",
+        "gst",
+        "income tax",
+        "itr",
+        "tds",
+        "freelance income tax"
+      ],
+      "a": "Freelance income is generally taxable. As a student with modest earnings you may fall under the basic exemption limit, but rules vary - check with a tax professional or the official income tax portal for your situation."
+    },
+    {
+      "id": "dev-web",
+      "q": [
+        "web development",
+        "web developer",
+        "website",
+        "html",
+        "css",
+        "javascript",
+        "react",
+        "frontend",
+        "front end",
+        "backend",
+        "node",
+        "wordpress",
+        "full stack",
+        "fullstack"
+      ],
+      "a": "Web projects are popular. To stand out: show 2-3 deployed sites (GitHub Pages, Netlify, Vercel), write clean responsive layouts, and mention frameworks (React, Node) in your skills. Search 'React' or 'Website' in Explore.",
+      "go": "explore"
+    },
+    {
+      "id": "dev-android",
+      "q": [
+        "android",
+        "app development",
+        "kotlin",
+        "flutter",
+        "mobile app",
+        "ios",
+        "java app",
+        "react native",
+        "mobile developer"
+      ],
+      "a": "Mobile dev gigs pay well. Showcase an app on GitHub or a demo APK/video, mention Kotlin/Flutter/React Native, and highlight things like Firebase, REST APIs, and clean UI. Filter Explore by Development to find them.",
+      "go": "explore"
+    },
+    {
+      "id": "dev-python",
+      "q": [
+        "python",
+        "django",
+        "flask",
+        "automation",
+        "scripting",
+        "script",
+        "web scraping",
+        "scraper",
+        "bot development"
+      ],
+      "a": "Python is great for automation, scraping, backend APIs and data tasks. Show scripts or small tools on GitHub with a clear README. Search 'Python' in Explore to see matching projects.",
+      "go": "explore"
+    },
+    {
+      "id": "design-uiux",
+      "q": [
+        "ui ux",
+        "uiux",
+        "ui design",
+        "ux design",
+        "figma",
+        "wireframe",
+        "prototype",
+        "mockup",
+        "app design",
+        "user interface",
+        "user experience"
+      ],
+      "a": "For UI/UX gigs, share Figma links or case studies that explain the problem, your process, and the final design. Even redesigns of existing apps count. Check the Design category in Explore.",
+      "go": "explore"
+    },
+    {
+      "id": "design-graphic",
+      "q": [
+        "graphic design",
+        "logo",
+        "poster",
+        "canva",
+        "photoshop",
+        "illustrator",
+        "branding",
+        "banner",
+        "thumbnail",
+        "social media design",
+        "flyer",
+        "brand identity"
+      ],
+      "a": "Graphic design clients love variety: logos, posters, social posts and thumbnails. Put your best 6-10 pieces on Behance or a Drive folder and link it in your profile.",
+      "go": "explore"
+    },
+    {
+      "id": "writing",
+      "q": [
+        "content writing",
+        "writing",
+        "copywriting",
+        "blog",
+        "article",
+        "essay",
+        "writer",
+        "ghostwriting",
+        "proofreading",
+        "editing",
+        "technical writing",
+        "scriptwriting",
+        "content writer"
+      ],
+      "a": "For writing gigs, share 2-3 samples (blog posts, articles, product copy), keep grammar spotless, and mention your niche. Meet word counts and deadlines, and clients will come back. See the Writing category.",
+      "go": "explore"
+    },
+    {
+      "id": "marketing",
+      "q": [
+        "marketing",
+        "seo",
+        "social media",
+        "social media manager",
+        "instagram",
+        "digital marketing",
+        "ads",
+        "facebook ads",
+        "google ads",
+        "email marketing",
+        "influencer",
+        "growth"
+      ],
+      "a": "Marketing clients want results. Show any growth you've driven (followers, clicks, campaigns for college fests) and mention tools like Meta Ads, Google Analytics, Canva, and SEO basics. Browse the Marketing category.",
+      "go": "explore"
+    },
+    {
+      "id": "data",
+      "q": [
+        "data analysis",
+        "data science",
+        "excel",
+        "sql",
+        "power bi",
+        "tableau",
+        "machine learning",
+        "ml",
+        "analytics",
+        "data entry",
+        "data cleaning",
+        "dashboard",
+        "pandas",
+        "statistics"
+      ],
+      "a": "Data gigs range from Excel cleanup to dashboards and ML. Share notebooks or dashboards with a clear question, method and result. SQL, Excel, Python and Power BI/Tableau are high-value skills. See the Data category.",
+      "go": "explore"
+    },
+    {
+      "id": "video",
+      "q": [
+        "video editing",
+        "video",
+        "reels",
+        "youtube",
+        "premiere",
+        "after effects",
+        "motion graphics",
+        "animation",
+        "editing videos",
+        "shorts",
+        "capcut",
+        "davinci"
+      ],
+      "a": "Video editors: put a short showreel (1-2 min) in your portfolio and mention your tools (Premiere, DaVinci, CapCut, After Effects). Fast turnaround on reels and shorts is a big plus."
+    },
+    {
+      "id": "translation",
+      "q": [
+        "translation",
+        "translate",
+        "translator",
+        "hindi",
+        "marathi",
+        "language",
+        "transcription",
+        "voice over",
+        "voiceover",
+        "typing"
+      ],
+      "a": "Language skills are valuable - mention every language you're fluent in plus any specialisation (technical, legal, subtitles). Accuracy and consistent turnaround matter more than speed."
+    },
+    {
+      "id": "tutoring",
+      "q": [
+        "tutoring",
+        "teaching",
+        "tutor",
+        "online teaching",
+        "coaching",
+        "mentoring",
+        "teach"
+      ],
+      "a": "If you can teach, look in the 'Other' category and mention your subjects and grades. Share a sample lesson or past results to build trust with parents and clients."
+    },
+    {
+      "id": "interview",
+      "q": [
+        "interview",
+        "client call",
+        "video call",
+        "meeting",
+        "prepare for call",
+        "interview tips",
+        "screening",
+        "discovery call"
+      ],
+      "a": "Before a call: re-read the project, prepare 2-3 questions about scope and goals, have your portfolio ready, and test your audio. Be on time, listen first, and confirm next steps at the end."
+    },
+    {
+      "id": "linkedin",
+      "q": [
+        "linkedin",
+        "social profile",
+        "networking",
+        "network",
+        "connections",
+        "online presence"
+      ],
+      "a": "A tidy LinkedIn helps: professional photo, a headline with your skill, 2-3 projects, and recommendations from professors or past clients. Share it alongside your resume link."
+    },
+    {
+      "id": "skills-improve",
+      "q": [
+        "learn new skill",
+        "upskill",
+        "improve skills",
+        "courses",
+        "learning",
+        "free courses",
+        "where to learn",
+        "get better",
+        "level up",
+        "certifications",
+        "certificate"
+      ],
+      "a": "Pick one in-demand skill and build 2-3 small projects with it - projects beat certificates. Free resources: freeCodeCamp, YouTube tutorials, NPTEL, Coursera audits, Google/Microsoft learning paths."
+    },
+    {
+      "id": "rating-reviews",
+      "q": [
+        "rating",
+        "ratings",
+        "reviews",
+        "review",
+        "feedback",
+        "testimonial",
+        "reputation",
+        "stars"
+      ],
+      "a": "Reviews aren't in the app yet, but you can ask satisfied clients for a short testimonial and add it to your portfolio or LinkedIn. Always request feedback after delivery."
+    },
+    {
+      "id": "dark-mode",
+      "q": [
+        "dark mode",
+        "dark theme",
+        "night mode",
+        "theme",
+        "change theme",
+        "colors",
+        "color scheme"
+      ],
+      "a": "SkillBridge currently uses a clean light theme. Dark mode may come in a future update."
+    },
+    {
+      "id": "language-support",
+      "q": [
+        "change language",
+        "app language",
+        "hindi app",
+        "language support",
+        "translate app",
+        "regional language"
+      ],
+      "a": "The app is currently available in English only. More languages may be added later."
+    },
+    {
+      "id": "app-bug",
+      "q": [
+        "bug",
+        "crash",
+        "app crashed",
+        "not working",
+        "error",
+        "problem with app",
+        "glitch",
+        "app is slow",
+        "slow",
+        "freezing",
+        "hang",
+        "stuck loading",
+        "loading forever",
+        "blank screen",
+        "white screen",
+        "broken"
+      ],
+      "a": "Sorry about that! Try: 1) check your internet, 2) close and reopen the app, 3) log out and back in, 4) update to the latest version. If it keeps happening, contact the SkillBridge team with what you were doing."
+    },
+    {
+      "id": "internet",
+      "q": [
+        "no internet",
+        "offline",
+        "internet connection",
+        "network error",
+        "connection problem",
+        "wifi",
+        "data connection"
+      ],
+      "a": "SkillBridge needs an internet connection for live projects, messages and map tiles. Some data is cached locally, but reconnect to get fresh updates."
+    },
+    {
+      "id": "contact-support",
+      "q": [
+        "contact support",
+        "support",
+        "customer care",
+        "help desk",
+        "contact us",
+        "report problem",
+        "feedback to team",
+        "complaint",
+        "email support",
+        "talk to human",
+        "human agent",
+        "talk to a person"
+      ],
+      "a": "For anything I can't solve, reach the SkillBridge team through the support contact in your project handover or the official channel. I'm a built-in helper, so I can't escalate tickets myself."
+    },
+    {
+      "id": "privacy-data",
+      "q": [
+        "privacy",
+        "my data",
+        "data safe",
+        "data privacy",
+        "personal information",
+        "who can see my profile",
+        "profile visible",
+        "visibility"
+      ],
+      "a": "Clients can see your profile (name, college, skills, bio, resume link) when you apply or when they discover students. Your password is never visible to anyone, and your exact location is generalised."
+    },
+    {
+      "id": "verification",
+      "q": [
+        "verification",
+        "verified",
+        "student verification",
+        "verify college",
+        "college id",
+        "verify account",
+        "badge"
+      ],
+      "a": "There's no formal verification step yet. Fill in your college, degree and graduation year honestly - an accurate profile builds trust."
+    },
+    {
+      "id": "who-built",
+      "q": [
+        "who made",
+        "who built",
+        "developer",
+        "creator",
+        "team behind",
+        "who created",
+        "made by",
+        "about team"
+      ],
+      "a": "SkillBridge was built as a student-freelance marketplace project. Ask the team for credits and details."
+    },
+    {
+      "id": "home-screen",
+      "q": [
+        "home screen",
+        "home tab",
+        "dashboard",
+        "home page",
+        "what is on home",
+        "my progress"
+      ],
+      "a": "Home shows your progress (applied, in review, shortlisted counts), your latest applications, recommended projects, and the notification bell.",
+      "go": "home"
+    },
+    {
+      "id": "bottom-nav",
+      "q": [
+        "navigation",
+        "tabs",
+        "where is",
+        "how to navigate",
+        "menu items",
+        "bottom bar",
+        "how to use the app",
+        "app guide",
+        "tutorial",
+        "walkthrough",
+        "how does it work",
+        "how to use"
+      ],
+      "a": "The bottom bar has five tabs: Home (overview), Explore (browse and filter projects), Applications (track your status), Messages (chat with clients) and Profile (your details). Use Nearby Jobs for the map view."
+    },
+    {
+      "id": "applications-tab",
+      "q": [
+        "applications tab",
+        "view my applications",
+        "see applications",
+        "applied jobs",
+        "my applied projects",
+        "application list",
+        "applications screen"
+      ],
+      "a": "Open the Applications tab to see every project you applied to with its current status. Tap one for the full pipeline and a Message button when chat is unlocked.",
+      "go": "applications"
+    },
+    {
+      "id": "deadline-project",
+      "q": [
+        "project deadline",
+        "application deadline",
+        "last date",
+        "closing date",
+        "when does it close",
+        "apply before"
+      ],
+      "a": "Each project lists a deadline on its details page. Apply well before it - clients often review the first applicants first."
+    },
+    {
+      "id": "experience-required",
+      "q": [
+        "experience required",
+        "years of experience",
+        "eligibility",
+        "am i eligible",
+        "qualify",
+        "requirements",
+        "do i qualify",
+        "required skills",
+        "minimum requirements"
+      ],
+      "a": "Each project lists required skills and experience. If you meet most of them, apply - explain how your projects make up for any gap. Match percentage in 'Recommended For You' helps you judge fit."
+    },
+    {
+      "id": "multiple-skills",
+      "q": [
+        "too many skills",
+        "multiple skills",
+        "many skills",
+        "jack of all trades",
+        "specialise",
+        "specialize",
+        "niche",
+        "focus"
+      ],
+      "a": "Lead with 1-2 core skills you can prove, then list supporting ones. Specialising makes your pitch sharper and your profile easier for clients to trust."
+    },
+    {
+      "id": "team-projects",
+      "q": [
+        "team",
+        "group",
+        "work with friends",
+        "collaborate",
+        "collaboration",
+        "partner",
+        "co-founder",
+        "team project"
+      ],
+      "a": "Each application is individual. If a project is large, mention in your intro that you can bring in a teammate - but be clear who is responsible for what."
+    },
+    {
+      "id": "ai-tools",
+      "q": [
+        "use chatgpt",
+        "ai tools",
+        "using ai",
+        "copilot",
+        "ai generated",
+        "generative ai",
+        "chatgpt for work"
+      ],
+      "a": "AI tools can speed up drafts, but always review and personalise the output, and be transparent if a client asks. Your judgement and quality are what clients pay for."
+    },
+    {
+      "id": "weekend-jobs",
+      "q": [
+        "part time",
+        "part-time",
+        "weekend",
+        "side income",
+        "side hustle",
+        "extra income",
+        "earn money",
+        "earn as student",
+        "make money",
+        "pocket money"
+      ],
+      "a": "Freelancing fits student life well: pick small, flexible projects, state your weekly hours, and build up gradually. Filter Explore by budget to find quick gigs.",
+      "go": "explore"
+    },
+    {
+      "id": "internship",
+      "q": [
+        "internship",
+        "intern",
+        "full time",
+        "full-time",
+        "placement",
+        "campus placement",
+        "permanent job"
+      ],
+      "a": "SkillBridge focuses on freelance projects, but they make great resume material for internships and placements. Mention client projects, links and outcomes in your applications."
+    },
+    {
+      "id": "recommend-fail",
+      "q": [
+        "no recommendations",
+        "recommendations empty",
+        "no matches",
+        "match not showing",
+        "why no match",
+        "matches missing"
+      ],
+      "a": "Matches depend on your profile. Add your skills, interests and location in Edit profile, and the AI Match Assistant will have more to work with.",
+      "go": "profile"
+    },
+    {
+      "id": "no-projects-nearby",
+      "q": [
+        "no projects nearby",
+        "nothing nearby",
+        "no jobs near me",
+        "empty map",
+        "no pins",
+        "no results",
+        "no jobs found",
+        "no projects found",
+        "map is empty"
+      ],
+      "a": "If the map is empty, try a bigger radius or pick a different city on the Nearby screen. Remote projects aren't pinned because they have no location, so check Explore for those.",
+      "go": "nearby"
+    },
+    {
+      "id": "city-pick",
+      "q": [
+        "change city",
+        "choose city",
+        "pick city",
+        "other city",
+        "different city",
+        "search by city",
+        "mumbai",
+        "pune",
+        "bengaluru",
+        "bangalore",
+        "hyderabad",
+        "delhi",
+        "chennai",
+        "kolkata",
+        "city"
+      ],
+      "a": "On the Nearby screen use the city chips (Mumbai, Pune, Bengaluru, Hyderabad, Delhi and more) to centre the map on that city and see projects around it - handy when you're planning to relocate or GPS is off.",
+      "go": "nearby"
+    },
+    {
+      "id": "c-post-project",
+      "role": "client",
+      "q": [
+        "post project",
+        "post a project",
+        "create project",
+        "add project",
+        "new project",
+        "post job",
+        "create job",
+        "list a project",
+        "publish project",
+        "how to post"
+      ],
+      "a": "Open the Post tab, fill in the title, category, budget, skills, description, responsibilities, requirements, deadline and (optionally) location, then publish. Clear details attract better applicants.",
+      "go": "post"
+    },
+    {
+      "id": "c-good-description",
+      "role": "client",
+      "q": [
+        "good description",
+        "write project description",
+        "project description",
+        "write a job post",
+        "better listing",
+        "attract students",
+        "get more applicants",
+        "more proposals",
+        "few applicants"
+      ],
+      "a": "Great listings state the outcome you want, list 3-5 concrete deliverables, mention required skills and the deadline, and give a realistic budget. Specific posts get stronger, more relevant applications."
+    },
+    {
+      "id": "c-budget",
+      "role": "client",
+      "q": [
+        "set budget",
+        "how much should i pay",
+        "fair budget",
+        "budget for project",
+        "project cost",
+        "what to pay students",
+        "student rates",
+        "how much pay",
+        "set a budget",
+        "how do i set a budget"
+      ],
+      "a": "Estimate the hours the work needs and multiply by a fair hourly rate (₹250-700/hr is typical for students depending on skill). Underpaying attracts low-effort work - a fair budget gets quality."
+    },
+    {
+      "id": "c-discover",
+      "role": "client",
+      "q": [
+        "find students",
+        "discover students",
+        "find talent",
+        "find freelancers",
+        "search students",
+        "search candidates",
+        "student map",
+        "students near me",
+        "find candidates",
+        "browse students",
+        "hire"
+      ],
+      "a": "Use the Discover tab to browse student profiles, search by skill, and see students around you on the map. Open a profile to see skills, college and resume link.",
+      "go": "discover"
+    },
+    {
+      "id": "c-proposals",
+      "role": "client",
+      "q": [
+        "view proposals",
+        "see applications",
+        "proposals",
+        "who applied",
+        "applicants",
+        "review applications",
+        "review proposals",
+        "incoming applications"
+      ],
+      "a": "Open one of your projects from the Projects tab and tap 'View proposals' to see everyone who applied. Open a proposal to read the intro, check the profile and update the status."
+    },
+    {
+      "id": "c-pick-student",
+      "role": "client",
+      "q": [
+        "pick right student",
+        "choose student",
+        "select candidate",
+        "best candidate",
+        "evaluate",
+        "evaluate applicants",
+        "how to choose",
+        "shortlist students",
+        "who to hire",
+        "pick the right",
+        "pick the right student",
+        "right student"
+      ],
+      "a": "Look for relevance over polish: do their skills and past projects match your needs, is the intro specific to your project, and do they communicate clearly? Shortlist 2-3, chat with them, and ask a small clarifying question to gauge responsiveness."
+    },
+    {
+      "id": "c-change-status",
+      "role": "client",
+      "q": [
+        "change status",
+        "update status",
+        "accept student",
+        "reject student",
+        "mark shortlisted",
+        "shortlist applicant",
+        "accept proposal",
+        "reject proposal"
+      ],
+      "a": "Open a proposal and set its status: Under Review, Shortlisted, Accepted or Rejected. Students are notified of each change, and chat unlocks at Shortlisted/Accepted."
+    },
+    {
+      "id": "c-message-student",
+      "role": "client",
+      "q": [
+        "message student",
+        "chat with student",
+        "contact student",
+        "talk to student",
+        "reach out",
+        "message a student"
+      ],
+      "a": "Once you shortlist or accept a student, open their proposal and tap 'Message'. Be clear about scope, deadline and budget in your first message.",
+      "go": "messages"
+    },
+    {
+      "id": "c-payment-setup",
+      "role": "client",
+      "q": [
+        "payment setup",
+        "set up payment",
+        "payment details",
+        "terms and conditions",
+        "accept terms",
+        "billing",
+        "client payment",
+        "pay student",
+        "how to pay"
+      ],
+      "a": "Clients complete a one-time payment setup after profile setup. Pay students as agreed in chat - split larger projects into milestones so both sides stay protected."
+    },
+    {
+      "id": "c-edit-project",
+      "role": "client",
+      "q": [
+        "edit project",
+        "close project",
+        "delete project",
+        "remove project",
+        "change project",
+        "update project",
+        "stop hiring",
+        "my projects"
+      ],
+      "a": "Find your posts in the Projects tab. Open a project to review its proposals and details. For changes to a published project, keep descriptions accurate so students apply with the right expectations.",
+      "go": "projects"
+    },
+    {
+      "id": "c-hiring-tips",
+      "role": "client",
+      "q": [
+        "hiring tips",
+        "tips for clients",
+        "manage students",
+        "manage freelancers",
+        "work with students",
+        "client tips",
+        "get best results",
+        "working with freelancers"
+      ],
+      "a": "Be clear about deliverables, set milestones, give timely feedback, and respect that students juggle classes. Fair pay and clear communication earn you your best work."
+    },
+    {
+      "id": "c-red-flag-student",
+      "role": "client",
+      "q": [
+        "bad proposal",
+        "fake profile",
+        "copy paste proposal",
+        "generic proposal",
+        "spam applicant",
+        "suspicious student",
+        "bad applicant"
+      ],
+      "a": "Warning signs: generic copy-pasted intros, empty profiles, no resume link, or unrealistic promises. Shortlist applicants who reference your project specifically."
+    },
+    {
+      "id": "c-ai-match",
+      "role": "client",
+      "q": [
+        "ai matching",
+        "best students for project",
+        "student matches",
+        "recommended students",
+        "match students",
+        "suggest students"
+      ],
+      "a": "Open the AI Match Assistant, pick one of your projects, and it ranks students by how well their skills, interests and location fit - with reasons for each match.",
+      "go": "matches"
+    }
+  ]
+}

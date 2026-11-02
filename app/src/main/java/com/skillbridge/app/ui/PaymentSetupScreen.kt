@@ -31,6 +31,7 @@ import com.skillbridge.app.ui.components.AppTextField
 import com.skillbridge.app.ui.components.ErrorText
 import com.skillbridge.app.ui.components.PrimaryButton
 import com.skillbridge.app.ui.components.ScreenScaffold
+import com.skillbridge.app.ui.components.SecondaryButton
 import com.skillbridge.app.ui.components.SectionHeader
 import com.skillbridge.app.ui.theme.Accent
 import com.skillbridge.app.ui.theme.Mute
@@ -38,7 +39,9 @@ import com.skillbridge.app.ui.theme.Mute
 @Composable
 fun PaymentSetupScreen(
     onDone: () -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    /** Shown as "Skip for now" during onboarding; null when editing from Profile. */
+    onSkip: (() -> Unit)? = null
 ) {
     val uid = AuthManager.uid()
 
@@ -124,6 +127,14 @@ fun PaymentSetupScreen(
                 loading = saving,
                 onClick = { save() }
             )
+            if (onSkip != null) {
+                SecondaryButton("Skip for now", onClick = onSkip)
+                Text(
+                    "You can add your card later from your Profile.",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = Mute
+                )
+            }
             Spacer(Modifier.height(8.dp))
         }
     }

@@ -8,6 +8,7 @@ object Routes {
     const val PROFILE_SETUP = "profile_setup"     // also reused for "edit profile"
     const val PAYMENT_SETUP = "payment_setup"
     const val EDIT_PROFILE = "profile_setup?edit=true"
+    const val EDIT_PAYMENT = "payment_setup?edit=true"   // from Profile, after skipping at onboarding
 
     // Bottom-nav tabs
     const val HOME = "home"
@@ -24,6 +25,8 @@ object Routes {
 
     const val NOTIFICATIONS = "notifications"
     const val AI_ASSISTANT = "ai_assistant"
+    const val CHATBOT = "chatbot"
+    const val NEARBY = "nearby"
     const val APPLICATION_SUBMITTED = "application_submitted"
 
     const val PROJECT_DETAILS_ROUTE = "project_details/{id}"
@@ -31,6 +34,9 @@ object Routes {
 
     const val CLIENT_PROJECT_DETAILS_ROUTE = "client_project_details/{id}"
     fun clientProjectDetails(id: String) = "client_project_details/$id"
+
+    const val JOB_MAP_ROUTE = "job_map/{id}"
+    fun jobMap(id: String) = "job_map/$id"
 
     const val PROPOSALS_ROUTE = "proposals/{id}"
     fun proposals(id: String) = "proposals/$id"

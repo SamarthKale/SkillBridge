@@ -187,6 +187,27 @@ object Repo {
             .addOnFailureListener { Log.w(TAG, "updatePaymentInfo", it); onResult(true) }
     }
 
+    // ---- Resume files (collection `resumes`, doc id == uid) -----------
+
+    fun getResume(uid: String, onResult: (ResumeFile?) -> Unit) {
+        if (uid.isEmpty()) { onResult(null); return }
+        db.collection("resumes").document(uid).get()
+            .addOnSuccessListener { onResult(if (it.exists()) it.toObject(ResumeFile::class.java) else null) }
+            .addOnFailureListener { Log.w(TAG, "getResume", it); onResult(null) }
+    }
+
+    fun saveResume(resume: ResumeFile, onResult: (Boolean) -> Unit) {
+        db.collection("resumes").document(resume.uid).set(resume)
+            .addOnSuccessListener { onResult(true) }
+            .addOnFailureListener { Log.w(TAG, "saveResume", it); onResult(false) }
+    }
+
+    fun deleteResume(uid: String, onResult: (Boolean) -> Unit) {
+        db.collection("resumes").document(uid).delete()
+            .addOnSuccessListener { onResult(true) }
+            .addOnFailureListener { Log.w(TAG, "deleteResume", it); onResult(false) }
+    }
+
     // ---- Applications (collection `applications`) ---------------------
 
     fun applicationId(uid: String, projectId: String) = "${uid}_$projectId"

@@ -26,6 +26,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.skillbridge.app.auth.AuthManager
+import com.skillbridge.app.auth.SignupPrefs
 import com.skillbridge.app.data.Repo
 import com.skillbridge.app.ui.ApplicationStatusScreen
 import com.skillbridge.app.ui.ApplicationSubmittedScreen
@@ -37,6 +38,7 @@ import com.skillbridge.app.ui.ClientProjectsScreen
 import com.skillbridge.app.ui.ConversationScreen
 import com.skillbridge.app.ui.ExploreScreen
 import com.skillbridge.app.ui.HomeScreen
+import com.skillbridge.app.ui.JobMapScreen
 import com.skillbridge.app.ui.LoginScreen
 import com.skillbridge.app.ui.MessagesScreen
 import com.skillbridge.app.ui.NotificationsScreen
@@ -49,6 +51,8 @@ import com.skillbridge.app.ui.SignupScreen
 import com.skillbridge.app.ui.ClientProjectDetailsScreen
 import androidx.compose.material3.ExtendedFloatingActionButton
 import com.skillbridge.app.ui.AiAssistantScreen
+import com.skillbridge.app.ui.ChatbotScreen
+import com.skillbridge.app.ui.NearbyJobsScreen
 import com.skillbridge.app.ui.ClientProposalDetailsScreen
 import com.skillbridge.app.ui.ProposalsScreen
 import com.skillbridge.app.ui.StudentProfileScreen
@@ -72,10 +76,10 @@ fun AppNavigation() {
         floatingActionButton = {
             if (showBottomBar) {
                 ExtendedFloatingActionButton(
-                    onClick = { nav.navigate(Routes.AI_ASSISTANT) },
+                    onClick = { nav.navigate(Routes.CHATBOT) },
                     containerColor = Ink,
                     contentColor = Paper,
-                    text = { Text("SkillBridge AI") },
+                    text = { Text("Ask Bridgey", color = Paper) },
                     icon = { Text("✨") }
                 )
             }
@@ -118,8 +122,13 @@ fun AppNavigation() {
                 ProfileSetupScreen(
                     isEdit = edit,
                     onDone = {
-                        if (edit) nav.popBackStack()
-                        else nav.navigate(Routes.PAYMENT_SETUP) { popUpTo(0) { inclusive = true } }
+                        when {
+                            edit -> nav.popBackStack()
+                            // Card details are a client-only step (and skippable).
+                            SignupPrefs.role == "client" ->
+                                nav.navigate(Routes.PAYMENT_SETUP) { popUpTo(0) { inclusive = true } }
+                            else -> nav.navigate(Routes.HOME) { popUpTo(0) { inclusive = true } }
+                        }
                     },
                     onBack = { 
                         if (edit) {
@@ -132,14 +141,22 @@ fun AppNavigation() {
                 )
             }
 
-            composable(Routes.PAYMENT_SETUP) {
+            composable(
+                route = "payment_setup?edit={edit}",
+                arguments = listOf(navArgument("edit") { type = NavType.BoolType; defaultValue = false })
+            ) { entry ->
+                val edit = entry.arguments?.getBoolean("edit") ?: false
+                val toClientHome = { nav.navigate(Routes.CLIENT_HOME) { popUpTo(0) { inclusive = true } } }
                 PaymentSetupScreen(
-                    onDone = {
-                        nav.navigate(Routes.CLIENT_HOME) { popUpTo(0) { inclusive = true } }
-                    },
+                    onDone = { if (edit) nav.popBackStack() else toClientHome() },
+                    onSkip = if (edit) null else toClientHome,
                     onBack = {
-                        AuthManager.logout()
-                        nav.navigate(Routes.LOGIN) { popUpTo(0) { inclusive = true } }
+                        if (edit) {
+                            nav.popBackStack()
+                        } else {
+                            AuthManager.logout()
+                            nav.navigate(Routes.LOGIN) { popUpTo(0) { inclusive = true } }
+                        }
                     }
                 )
             }
@@ -164,12 +181,18 @@ fun AppNavigation() {
                     onOpenApplication = { appId -> nav.navigate(Routes.applicationStatus(appId)) },
                     onOpenNotifications = { nav.navigate(Routes.NOTIFICATIONS) },
                     onOpenAiAssistant = { nav.navigate(Routes.AI_ASSISTANT) },
-                    onOpenProfile = { navigateTab(nav, Routes.PROFILE, false) }
+                    onOpenNearby = { nav.navigate(Routes.NEARBY) },
+                    onOpenProfile = { navigateTab(nav, Routes.PROFILE, false) },
+                    onViewMap = { id -> nav.navigate(Routes.jobMap(id)) }
                 )
             }
 
             composable(Routes.EXPLORE) {
-                ExploreScreen(onOpenProject = { id -> nav.navigate(Routes.projectDetails(id)) })
+                ExploreScreen(
+                    onOpenProject = { id -> nav.navigate(Routes.projectDetails(id)) },
+                    onOpenNearby = { nav.navigate(Routes.NEARBY) },
+                    onViewMap = { id -> nav.navigate(Routes.jobMap(id)) }
+                )
             }
 
             composable(Routes.CLIENT_HOME) {
@@ -224,7 +247,8 @@ fun AppNavigation() {
                     onBack = { nav.popBackStack() },
                     onViewProposals = { nav.navigate(Routes.proposals(id)) },
                     onOpenStudentProfile = { uid -> nav.navigate(Routes.studentProfile(uid)) },
-                    onOpenProposal = { appId -> nav.navigate(Routes.clientProposalDetails(appId)) }
+                    onOpenProposal = { appId -> nav.navigate(Routes.clientProposalDetails(appId)) },
+                    onViewMap = { nav.navigate(Routes.jobMap(id)) }
                 )
             }
 
@@ -268,6 +292,7 @@ fun AppNavigation() {
             composable(Routes.PROFILE) {
                 ProfileScreen(
                     onEditProfile = { nav.navigate(Routes.EDIT_PROFILE) },
+                    onEditPayment = { nav.navigate(Routes.EDIT_PAYMENT) },
                     onLoggedOut = {
                         AuthManager.logout()
                         nav.navigate(Routes.LOGIN) { popUpTo(0) { inclusive = true } }
@@ -277,6 +302,44 @@ fun AppNavigation() {
 
             composable(Routes.NOTIFICATIONS) {
                 NotificationsScreen(onBack = { nav.popBackStack() })
+            }
+
+            composable(Routes.NEARBY) {
+                NearbyJobsScreen(
+                    onBack = { nav.popBackStack() },
+                    onOpenProject = { id -> nav.navigate(Routes.projectDetails(id)) },
+                    onViewMap = { id -> nav.navigate(Routes.jobMap(id)) }
+                )
+            }
+
+            composable(
+                route = Routes.JOB_MAP_ROUTE,
+                arguments = listOf(navArgument("id") { type = NavType.StringType })
+            ) { entry ->
+                JobMapScreen(
+                    opportunityId = entry.arguments?.getString("id").orEmpty(),
+                    onBack = { nav.popBackStack() }
+                )
+            }
+
+            composable(Routes.CHATBOT) {
+                ChatbotScreen(
+                    onBack = { nav.popBackStack() },
+                    onNavigate = { action ->
+                        when (action) {
+                            "nearby" -> nav.navigate(Routes.NEARBY)
+                            "matches" -> nav.navigate(Routes.AI_ASSISTANT)
+                            "explore" -> navigateTab(nav, Routes.EXPLORE, false)
+                            "applications" -> navigateTab(nav, Routes.APPLICATIONS, false)
+                            "messages" -> navigateTab(nav, Routes.MESSAGES, false)
+                            "home" -> navigateTab(nav, Routes.HOME, false)
+                            "profile" -> navigateTab(nav, Routes.PROFILE, false)
+                            "post" -> navigateTab(nav, Routes.CLIENT_POST_PROJECT, true)
+                            "discover" -> navigateTab(nav, Routes.CLIENT_DISCOVER, true)
+                            "projects" -> navigateTab(nav, Routes.CLIENT_PROJECTS, true)
+                        }
+                    }
+                )
             }
 
             composable(Routes.AI_ASSISTANT) {
@@ -296,7 +359,8 @@ fun AppNavigation() {
                 ProjectDetailsScreen(
                     opportunityId = id,
                     onBack = { nav.popBackStack() },
-                    onApply = { nav.navigate(Routes.apply(id)) }
+                    onApply = { nav.navigate(Routes.apply(id)) },
+                    onViewMap = { nav.navigate(Routes.jobMap(id)) }
                 )
             }
 
@@ -353,7 +417,6 @@ private fun resolveAfterAuth(nav: NavHostController) {
     Repo.getProfile(AuthManager.uid()) { profile ->
         val dest = when {
             profile == null -> Routes.PROFILE_SETUP
-            profile.role == "client" && !profile.acceptedTerms -> Routes.PAYMENT_SETUP
             profile.role == "client" -> Routes.CLIENT_HOME
             else -> Routes.HOME
         }

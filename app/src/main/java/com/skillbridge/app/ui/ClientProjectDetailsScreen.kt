@@ -10,6 +10,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -42,7 +43,8 @@ fun ClientProjectDetailsScreen(
     onBack: () -> Unit,
     onViewProposals: () -> Unit,
     onOpenStudentProfile: (String) -> Unit = {},
-    onOpenProposal: (String) -> Unit = {}
+    onOpenProposal: (String) -> Unit = {},
+    onViewMap: () -> Unit = {}
 ) {
     var opp by remember { mutableStateOf<Opportunity?>(null) }
     var proposals by remember { mutableStateOf<List<Application>>(emptyList()) }
@@ -92,9 +94,9 @@ fun ClientProjectDetailsScreen(
                     if (o.workArrangement != com.skillbridge.app.data.WorkArrangement.REMOTE) {
                         LabeledValue("Location", o.location.ifBlank { "On-site" })
                         LabeledValue("Max Distance", "${o.maxDistanceKm} km")
-                        if (o.latitude != null && o.longitude != null) {
-                            Text("📍 View on Map", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
-                        }
+                    }
+                    if (o.latitude != null && o.longitude != null) {
+                        TextButton(onClick = onViewMap) { Text("📍 View on map") }
                     }
                 }
             }

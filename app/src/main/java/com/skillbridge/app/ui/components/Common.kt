@@ -27,6 +27,13 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import com.skillbridge.app.utils.FileUtils
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -301,16 +308,22 @@ fun SearchField(
 }
 
 @Composable
-fun Avatar(name: String, size: Int = 44, modifier: Modifier = Modifier) {
+fun Avatar(name: String, size: Int = 44, modifier: Modifier = Modifier, photo: String = "") {
     val initials = name.trim().split(" ").filter { it.isNotEmpty() }
         .take(2).joinToString("") { it.first().uppercase() }.ifEmpty { "?" }
+    val bitmap = remember(photo) { if (photo.isBlank()) null else FileUtils.decodePhoto(photo)?.asImageBitmap() }
     Box(
         modifier
             .size(size.dp)
+            .clip(RoundedCornerShape(999.dp))
             .background(AccentSoft, RoundedCornerShape(999.dp))
             .border(1.dp, Line, RoundedCornerShape(999.dp)),
         contentAlignment = Alignment.Center
     ) {
-        Text(initials, style = MaterialTheme.typography.labelLarge, color = Accent)
+        if (bitmap != null) {
+            Image(bitmap, contentDescription = name, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
+        } else {
+            Text(initials, style = MaterialTheme.typography.labelLarge, color = Accent)
+        }
     }
 }

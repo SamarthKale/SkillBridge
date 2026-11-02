@@ -27,6 +27,7 @@ import com.skillbridge.app.ui.components.Avatar
 import com.skillbridge.app.ui.components.LabeledValue
 import com.skillbridge.app.ui.components.OutlinedCardBox
 import com.skillbridge.app.ui.components.PrimaryButton
+import com.skillbridge.app.ui.components.ResumeViewer
 import com.skillbridge.app.ui.components.ScreenScaffold
 import com.skillbridge.app.ui.components.SectionHeader
 import com.skillbridge.app.ui.components.SkillChips
@@ -63,7 +64,7 @@ fun StudentProfileScreen(
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Avatar(p.name, size = 60)
+                    Avatar(p.name, size = 60, photo = p.photoUrl)
                     Spacer(Modifier.width(14.dp))
                     Column {
                         Text(p.name, style = MaterialTheme.typography.titleMedium)
@@ -99,6 +100,7 @@ fun StudentProfileScreen(
                 SectionHeader("Resume")
                 Text(p.resumeUrl.ifBlank { "No resume link added." },
                     style = MaterialTheme.typography.bodyMedium, color = Mute)
+                ResumeViewer(p.uid)
 
                 Spacer(Modifier.height(8.dp))
                 PrimaryButton("Invite to Project (Coming Soon)", onClick = { /* TODO */ })

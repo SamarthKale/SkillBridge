@@ -12,6 +12,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.Alignment
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -36,7 +38,8 @@ import com.skillbridge.app.ui.theme.Mute
 fun ProjectDetailsScreen(
     opportunityId: String,
     onBack: () -> Unit,
-    onApply: () -> Unit
+    onApply: () -> Unit,
+    onViewMap: () -> Unit = {}
 ) {
     var opp by remember { mutableStateOf<Opportunity?>(null) }
     var loading by remember { mutableStateOf(true) }
@@ -71,13 +74,19 @@ fun ProjectDetailsScreen(
                     LabeledValue("Location", if (o.workArrangement == com.skillbridge.app.data.WorkArrangement.REMOTE) "Remote" else "${o.workArrangement} (${o.location.ifBlank { "On-site" }})", Modifier.weight(1f))
                     LabeledValue("Experience", o.experienceRequired, Modifier.weight(1f))
                 }
-                if (o.workArrangement != com.skillbridge.app.data.WorkArrangement.REMOTE) {
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(24.dp)) {
-                        LabeledValue("Max Distance", "${o.maxDistanceKm} km", Modifier.weight(1f))
-                        if (o.latitude != null && o.longitude != null) {
-                            Text("📍 View on Map", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary, modifier = Modifier.weight(1f).padding(top = 16.dp))
+                if (o.latitude != null && o.longitude != null) {
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(24.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        if (o.workArrangement != com.skillbridge.app.data.WorkArrangement.REMOTE) {
+                            LabeledValue("Max Distance", "${o.maxDistanceKm} km", Modifier.weight(1f))
                         } else {
-                            Spacer(modifier = Modifier.weight(1f))
+                            LabeledValue("Based in", o.placeLabel().removePrefix("Company base: "), Modifier.weight(1f))
+                        }
+                        TextButton(onClick = onViewMap, modifier = Modifier.weight(1f)) {
+                            Text("📍 View on map")
                         }
                     }
                 }

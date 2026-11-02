@@ -30,7 +30,13 @@ import com.skillbridge.app.auth.AuthManager
 import com.skillbridge.app.auth.SignupPrefs
 import com.skillbridge.app.data.Profile
 import com.skillbridge.app.data.Repo
+import com.skillbridge.app.data.ResumeFile
 import com.skillbridge.app.data.Skills
+import com.skillbridge.app.ui.components.SecondaryButton
+import com.skillbridge.app.utils.FileUtils
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.TextButton
 import com.skillbridge.app.ui.components.AppTextField
 import com.skillbridge.app.ui.components.Avatar
 import com.skillbridge.app.ui.components.ErrorText
@@ -67,6 +73,10 @@ fun ProfileSetupScreen(
     var experience by remember { mutableStateOf("") }
     var bio by remember { mutableStateOf("") }
     var resumeUrl by remember { mutableStateOf("") }
+    var photoUrl by remember { mutableStateOf("") }
+    var existingResume by remember { mutableStateOf<ResumeFile?>(null) }
+    var newResume by remember { mutableStateOf<ResumeFile?>(null) }
+    var resumeRemoved by remember { mutableStateOf(false) }
     var companyName by remember { mutableStateOf("") }
     var companyType by remember { mutableStateOf("") }
     var companyDescription by remember { mutableStateOf("") }
@@ -92,11 +102,28 @@ fun ProfileSetupScreen(
                     experience = p.experience
                     bio = p.bio
                     resumeUrl = p.resumeUrl
+                    photoUrl = p.photoUrl
                     companyName = p.companyName
                     companyType = p.companyType
                     companyDescription = p.companyDescription
                 }
                 loaded = true
+            }
+            Repo.getResume(uid) { existingResume = it }
+        }
+    }
+
+    val photoPicker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri != null) {
+            val encoded = FileUtils.encodePhoto(context, uri)
+            if (encoded != null) { photoUrl = encoded; error = null } else error = "Could not read that image."
+        }
+    }
+    val resumePicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) {
+            when (val r = FileUtils.readResume(context, uri, uid)) {
+                is FileUtils.ResumeRead.Ok -> { newResume = r.file; resumeRemoved = false; error = null }
+                is FileUtils.ResumeRead.Error -> error = r.message
             }
         }
     }
@@ -145,7 +172,7 @@ fun ProfileSetupScreen(
             latitude = latitude,
             longitude = longitude,
             locationUpdatedAt = if (locationEnabled && latitude != null) now else existing?.locationUpdatedAt ?: 0L,
-            photoUrl = existing?.photoUrl ?: "",
+            photoUrl = photoUrl,
             degree = degree.trim(),
             college = college.trim(),
             branch = branch.trim(),
@@ -161,7 +188,17 @@ fun ProfileSetupScreen(
             updatedAt = now
         )
         Repo.saveProfile(profile) { ok ->
-            if (ok) onDone() else { saving = false; error = "Could not save your profile. Try again." }
+            if (!ok) { saving = false; error = "Could not save your profile. Try again."; return@saveProfile }
+            // The optional resume file is saved after the profile; a failure here keeps the user on the form.
+            val upload = newResume
+            fun resumeDone(success: Boolean) {
+                if (success) onDone() else { saving = false; error = "Profile saved, but the resume file could not be uploaded." }
+            }
+            when {
+                upload != null -> Repo.saveResume(upload, ::resumeDone)
+                resumeRemoved && existingResume != null -> Repo.deleteResume(uid, ::resumeDone)
+                else -> onDone()
+            }
         }
     }
 
@@ -176,8 +213,21 @@ fun ProfileSetupScreen(
                 .padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Avatar(name.ifBlank { "?" }, size = 64)
-            Text("Photo upload is disabled in this build.", style = MaterialTheme.typography.labelMedium, color = Mute)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Avatar(name.ifBlank { "?" }, size = 72, photo = photoUrl)
+                Spacer(Modifier.width(16.dp))
+                Column {
+                    SecondaryButton(
+                        if (photoUrl.isBlank()) "Add photo" else "Change photo",
+                        onClick = {
+                            photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                        }
+                    )
+                    if (photoUrl.isNotBlank()) {
+                        TextButton(onClick = { photoUrl = "" }) { Text("Remove photo") }
+                    }
+                }
+            }
 
             SectionHeader("Personal")
             AppTextField(name, { name = it; error = null }, "Name")
@@ -238,8 +288,31 @@ fun ProfileSetupScreen(
                 AppTextField(bio, { bio = it }, "Short bio", singleLine = false, minLines = 2)
 
                 Spacer(Modifier.height(4.dp))
-                SectionHeader("Resume")
+                SectionHeader("Resume (optional)")
                 AppTextField(resumeUrl, { resumeUrl = it }, "Link to your resume (Google Drive, etc.)")
+
+                val shownResume = newResume ?: existingResume.takeUnless { resumeRemoved }
+                if (shownResume != null) {
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                        Column(Modifier.weight(1f)) {
+                            Text("📄 ${shownResume.fileName}", style = MaterialTheme.typography.bodyMedium)
+                            Text(
+                                FileUtils.formatSize(shownResume.sizeBytes) +
+                                    if (newResume != null) " · uploads when you save" else "",
+                                style = MaterialTheme.typography.labelMedium, color = Mute
+                            )
+                        }
+                        TextButton(onClick = { newResume = null; resumeRemoved = true }) { Text("Remove") }
+                    }
+                }
+                SecondaryButton(
+                    if (shownResume == null) "Upload resume file" else "Replace resume file",
+                    onClick = { resumePicker.launch(FileUtils.RESUME_MIME_TYPES) }
+                )
+                Text(
+                    "PDF or Word, up to ${FileUtils.MAX_RESUME_BYTES / 1024} KB. You can skip this.",
+                    style = MaterialTheme.typography.labelMedium, color = Mute
+                )
             } else {
                 Spacer(Modifier.height(4.dp))
                 SectionHeader("Company Details")

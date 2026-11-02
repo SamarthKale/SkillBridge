@@ -17,8 +17,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        com.maptiler.maptilersdk.MTConfig.apiKey = BuildConfig.MAPTILER_API_KEY
-
         // Store a simple launch log in the local SQLite database
         val dbHelper = DatabaseHelper(this)
         dbHelper.insertLog("App Launched")

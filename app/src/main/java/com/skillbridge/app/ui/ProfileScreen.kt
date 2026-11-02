@@ -34,6 +34,7 @@ import com.skillbridge.app.ui.components.Avatar
 import com.skillbridge.app.ui.components.LabeledValue
 import com.skillbridge.app.ui.components.OutlinedCardBox
 import com.skillbridge.app.ui.components.PrimaryButton
+import com.skillbridge.app.ui.components.ResumeViewer
 import com.skillbridge.app.ui.components.ScreenScaffold
 import com.skillbridge.app.ui.components.SecondaryButton
 import com.skillbridge.app.ui.components.SectionHeader
@@ -44,7 +45,8 @@ import com.skillbridge.app.ui.theme.Mute
 @Composable
 fun ProfileScreen(
     onEditProfile: () -> Unit,
-    onLoggedOut: () -> Unit
+    onLoggedOut: () -> Unit,
+    onEditPayment: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val profile by rememberMyProfile()
@@ -77,7 +79,7 @@ fun ProfileScreen(
             val isClient = profile?.role == "client"
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Avatar(name, size = 60)
+                Avatar(name, size = 60, photo = profile?.photoUrl.orEmpty())
                 Spacer(Modifier.width(14.dp))
                 Column {
                     Text(name, style = MaterialTheme.typography.titleMedium)
@@ -104,6 +106,24 @@ fun ProfileScreen(
 
                 SectionHeader("About Us")
                 Text(profile?.companyDescription?.ifBlank { "-" } ?: "-", style = MaterialTheme.typography.bodyMedium)
+
+                SectionHeader("Payment Details")
+                OutlinedCardBox {
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                        val last4 = profile?.cardNumber?.filter { it.isDigit() }?.takeLast(4).orEmpty()
+                        Column(Modifier.weight(1f)) {
+                            Text(
+                                if (last4.isNotEmpty()) "Card ending in $last4" else "No card added yet",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Text(
+                                if (last4.isNotEmpty()) "Tap Edit to change it." else "You skipped this step. Add it whenever you're ready.",
+                                style = MaterialTheme.typography.labelMedium, color = Mute
+                            )
+                        }
+                        TextButton(onClick = onEditPayment) { Text(if (last4.isNotEmpty()) "Edit" else "Add") }
+                    }
+                }
             } else {
                 SectionHeader("Skills")
                 SkillChips(profile?.skills ?: emptyList())
@@ -130,6 +150,7 @@ fun ProfileScreen(
                 SectionHeader("Resume")
                 Text(profile?.resumeUrl?.ifBlank { "No resume link added." } ?: "-",
                     style = MaterialTheme.typography.bodyMedium, color = Mute)
+                ResumeViewer(AuthManager.uid(), reloadKey = profile?.updatedAt)
             }
 
             Spacer(Modifier.height(6.dp))

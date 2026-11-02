@@ -2,6 +2,7 @@ package com.skillbridge.app.data
 
 import android.util.Log
 import com.google.firebase.firestore.DocumentSnapshot
+import com.skillbridge.app.utils.CityCoords
 
 private const val MAPPER_TAG = "SkillBridgeMapDebug"
 
@@ -76,6 +77,15 @@ fun DocumentSnapshot.toOpportunitySafe(): Opportunity? {
         "lonRaw=$lonRaw (${lonRaw?.let { it::class.java.simpleName } ?: "null"}), " +
         "validLat=$validatedLat, validLon=$validatedLon, " +
         "remote=${obj.remote}, workArrangement=${obj.workArrangement}")
+
+    // No usable GPS point: place the job at the city named in its location text, or — for
+    // remote / blank locations — at a stable pseudo-random city (the company's "base"), so every
+    // job can be shown on a map. Derived at read time; nothing is written back to Firestore.
+    if (validatedLat == null || validatedLon == null) {
+        val (lat, lon) = CityCoords.lookupSpread(obj.location, this.id)
+            ?: CityCoords.fallbackSpread(this.id)
+        return obj.copy(latitude = lat, longitude = lon)
+    }
 
     return obj.copy(latitude = validatedLat, longitude = validatedLon)
 }

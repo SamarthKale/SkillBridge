@@ -27,6 +27,7 @@ import com.skillbridge.app.ui.components.OutlinedCardBox
 import com.skillbridge.app.ui.components.PrimaryButton
 import com.skillbridge.app.ui.components.ScreenScaffold
 import com.skillbridge.app.ui.components.SecondaryButton
+import com.skillbridge.app.ui.components.ResumeViewer
 import com.skillbridge.app.ui.components.SectionHeader
 import com.skillbridge.app.ui.components.StatusChip
 import com.skillbridge.app.ui.components.formatDate
@@ -84,7 +85,8 @@ fun ClientProposalDetailsScreen(
                 Text(a.intro.ifBlank { "-" }, style = MaterialTheme.typography.bodyMedium)
 
                 SectionHeader("Resume")
-                Text(a.resumeUrl.ifBlank { "No resume provided." }, style = MaterialTheme.typography.bodyMedium, color = Mute)
+                Text(a.resumeUrl.ifBlank { "No resume link provided." }, style = MaterialTheme.typography.bodyMedium, color = Mute)
+                ResumeViewer(a.studentUid)
 
                 Spacer(Modifier.height(4.dp))
 
