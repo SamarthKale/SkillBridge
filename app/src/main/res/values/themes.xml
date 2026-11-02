@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base theme. The real colors come from Compose (ui/theme/Theme.kt);
+    <!-- Base theme. The real colors come from Compose (ui/theme/Theme.kt, Glass.kt);
          this only needs to be a Material 3 parent with no action bar. -->
     <style name="Theme.SkillBridge" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:statusBarColor">#FFFFFFFF</item>
+        <!-- Matches the top of the glass backdrop gradient (SkyTop) so there is no white band. -->
+        <item name="android:statusBarColor">#FFBBD4E8</item>
         <item name="android:windowLightStatusBar">true</item>
     </style>
 </resources>

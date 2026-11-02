@@ -1,5 +1,7 @@
 package com.skillbridge.app.ui
 
+import com.skillbridge.app.ui.theme.glass
+
 import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -232,8 +234,7 @@ fun ExploreScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(400.dp)
-                            .background(Paper, RoundedCornerShape(12.dp))
-                            .border(1.dp, Line, RoundedCornerShape(12.dp))
+                            .glass(RoundedCornerShape(20.dp))
                     ) {
                         var selectedProject by remember { mutableStateOf<Opportunity?>(null) }
 

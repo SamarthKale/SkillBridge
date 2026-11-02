@@ -1,5 +1,8 @@
 package com.skillbridge.app.ui.components
 
+import com.skillbridge.app.ui.theme.glass
+import com.skillbridge.app.ui.theme.glassInset
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -49,8 +52,8 @@ fun AiAssistantBanner(isClient: Boolean, onClick: () -> Unit, modifier: Modifier
     Row(
         modifier
             .fillMaxWidth()
-            .background(AccentSoft, RoundedCornerShape(12.dp))
-            .border(1.dp, Accent.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+            .glass(RoundedCornerShape(22.dp), fill = 0.34f)
+            .background(Accent.copy(alpha = 0.10f), RoundedCornerShape(22.dp)) // blue-tinted glass
             .clickable(onClick = onClick)
             .padding(14.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -80,8 +83,8 @@ private fun ReasonsBox(reasons: List<String>, missing: List<String>) {
     Column(
         Modifier
             .fillMaxWidth()
-            .background(Smoke, RoundedCornerShape(8.dp))
-            .padding(8.dp),
+            .glassInset(RoundedCornerShape(12.dp))
+            .padding(10.dp),
         verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         reasons.take(2).forEach {

@@ -1,5 +1,7 @@
 package com.skillbridge.app.ui
 
+import com.skillbridge.app.ui.theme.glassInset
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -179,8 +181,7 @@ fun PostProjectScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Smoke, RoundedCornerShape(12.dp))
-                        .border(1.dp, Line, RoundedCornerShape(12.dp))
+                        .glassInset(RoundedCornerShape(16.dp))
                         .padding(14.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
@@ -212,8 +213,7 @@ fun PostProjectScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .background(Paper, RoundedCornerShape(8.dp))
-                                .border(1.dp, Line, RoundedCornerShape(8.dp))
+                                .glassInset(RoundedCornerShape(12.dp), fill = 0.7f)
                                 .padding(horizontal = 12.dp, vertical = 8.dp)
                         ) {
                             Text(

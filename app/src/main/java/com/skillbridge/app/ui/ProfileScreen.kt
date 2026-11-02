@@ -30,6 +30,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import com.skillbridge.app.data.Repo
 import com.skillbridge.app.utils.LocationUtils
+import com.skillbridge.app.ui.components.AboutSkillBridge
 import com.skillbridge.app.ui.components.Avatar
 import com.skillbridge.app.ui.components.LabeledValue
 import com.skillbridge.app.ui.components.OutlinedCardBox
@@ -152,6 +153,9 @@ fun ProfileScreen(
                     style = MaterialTheme.typography.bodyMedium, color = Mute)
                 ResumeViewer(AuthManager.uid(), reloadKey = profile?.updatedAt)
             }
+
+            Spacer(Modifier.height(6.dp))
+            AboutSkillBridge()
 
             Spacer(Modifier.height(6.dp))
             SectionHeader("Privacy Settings")

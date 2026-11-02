@@ -4,9 +4,12 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import com.skillbridge.app.ui.theme.GlassBackdrop
 import com.skillbridge.app.data.local.DatabaseHelper
 import com.skillbridge.app.navigation.AppNavigation
 import com.skillbridge.app.ui.theme.SkillBridgeTheme
@@ -40,8 +43,12 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SkillBridgeTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    AppNavigation()
+                // Transparent surface + one shared gradient behind every screen = the glass look.
+                Surface(modifier = Modifier.fillMaxSize(), color = Color.Transparent) {
+                    Box(Modifier.fillMaxSize()) {
+                        GlassBackdrop()
+                        AppNavigation()
+                    }
                 }
             }
         }

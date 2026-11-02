@@ -15,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.skillbridge.app.ui.theme.Ink
-import com.skillbridge.app.ui.theme.Paper
 
 /**
  * Shared plain white screen frame with a simple top bar. Keeps the experimental
@@ -31,7 +30,7 @@ fun ScreenScaffold(
     content: @Composable (PaddingValues) -> Unit
 ) {
     Scaffold(
-        containerColor = Paper,
+        containerColor = Color.Transparent, // the app-wide glass backdrop shows through
         topBar = {
             TopAppBar(
                 title = { Text(title) },
@@ -44,7 +43,8 @@ fun ScreenScaffold(
                 },
                 actions = { actions() },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Paper,
+                    containerColor = Color.Transparent,
+                    scrolledContainerColor = Color.Transparent,
                     titleContentColor = Ink,
                     navigationIconContentColor = Ink,
                     actionIconContentColor = Ink

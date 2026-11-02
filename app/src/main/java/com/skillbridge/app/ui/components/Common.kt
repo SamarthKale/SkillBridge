@@ -25,6 +25,10 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.ui.graphics.Color
+import com.skillbridge.app.ui.theme.GlassWhite
+import com.skillbridge.app.ui.theme.glass
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -74,11 +78,24 @@ fun AppTextField(
         label = { Text(label) },
         singleLine = singleLine,
         minLines = minLines,
+        shape = RoundedCornerShape(16.dp),
+        colors = glassFieldColors(),
         visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
         modifier = modifier.fillMaxWidth()
     )
 }
+
+/** Translucent field fill + soft blue-grey outline; turns ink-black when focused. */
+@Composable
+private fun glassFieldColors() = OutlinedTextFieldDefaults.colors(
+    focusedContainerColor = GlassWhite.copy(alpha = 0.70f),
+    unfocusedContainerColor = GlassWhite.copy(alpha = 0.50f),
+    disabledContainerColor = GlassWhite.copy(alpha = 0.35f),
+    focusedBorderColor = Ink,
+    unfocusedBorderColor = Color(0xFFCFD9E1),
+    cursorColor = Ink
+)
 
 // ---- Buttons --------------------------------------------------------
 
@@ -108,7 +125,7 @@ private fun FilledButton(
     Button(
         onClick = onClick,
         enabled = enabled && !loading,
-        shape = RoundedCornerShape(10.dp),
+        shape = RoundedCornerShape(50),
         colors = ButtonDefaults.buttonColors(containerColor = container, contentColor = Paper),
         modifier = modifier.fillMaxWidth().height(50.dp)
     ) {
@@ -130,8 +147,9 @@ fun SecondaryButton(
     OutlinedButton(
         onClick = onClick,
         enabled = enabled,
-        shape = RoundedCornerShape(10.dp),
-        border = BorderStroke(1.dp, Ink),
+        shape = RoundedCornerShape(50),
+        colors = ButtonDefaults.outlinedButtonColors(containerColor = GlassWhite.copy(alpha = 0.75f)),
+        border = BorderStroke(1.dp, Color(0x1F111111)),
         modifier = modifier.fillMaxWidth().height(50.dp)
     ) {
         Text(text, color = Ink, style = MaterialTheme.typography.labelLarge)
@@ -180,23 +198,16 @@ fun OutlinedCardBox(
     onClick: (() -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
-    Card(
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Paper),
-        border = BorderStroke(1.dp, Line),
-        modifier = if (onClick != null) modifier.fillMaxWidth().clickable(onClick = onClick)
-        else modifier.fillMaxWidth()
-    ) { Box(Modifier.padding(14.dp)) { content() } }
+    // Frosted glass card. `glass()` clips to the shape first so the ripple stays inside it.
+    Box(
+        if (onClick != null) modifier.fillMaxWidth().glass().clickable(onClick = onClick)
+        else modifier.fillMaxWidth().glass()
+    ) { Box(Modifier.padding(16.dp)) { content() } }
 }
 
 @Composable
 fun StatCard(label: String, value: Int, modifier: Modifier = Modifier) {
-    Card(
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Paper),
-        border = BorderStroke(1.dp, Line),
-        modifier = modifier
-    ) {
+    Box(modifier.glass()) {
         Column(
             modifier = Modifier.padding(vertical = 14.dp, horizontal = 8.dp).fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -214,8 +225,8 @@ fun StatCard(label: String, value: Int, modifier: Modifier = Modifier) {
 fun Pill(text: String, modifier: Modifier = Modifier) {
     Box(
         modifier
-            .background(Smoke, RoundedCornerShape(999.dp))
-            .border(1.dp, Line, RoundedCornerShape(999.dp))
+            .background(GlassWhite.copy(alpha = 0.55f), RoundedCornerShape(999.dp))
+            .border(1.dp, GlassWhite.copy(alpha = 0.9f), RoundedCornerShape(999.dp))
             .padding(horizontal = 10.dp, vertical = 4.dp)
     ) { Text(text, style = MaterialTheme.typography.labelMedium, color = Ink) }
 }
@@ -269,8 +280,8 @@ fun SelectableChips(
             Box(
                 Modifier
                     .clickable { onToggle(opt) }
-                    .background(if (on) Ink else Paper, RoundedCornerShape(999.dp))
-                    .border(1.dp, if (on) Ink else Line, RoundedCornerShape(999.dp))
+                    .background(if (on) Ink else GlassWhite.copy(alpha = 0.55f), RoundedCornerShape(999.dp))
+                    .border(1.dp, if (on) Ink else GlassWhite.copy(alpha = 0.9f), RoundedCornerShape(999.dp))
                     .padding(horizontal = 12.dp, vertical = 7.dp)
             ) {
                 Text(
@@ -300,7 +311,8 @@ fun SearchField(
         placeholder = { Text(placeholder, color = Mute) },
         singleLine = true,
         enabled = enabled,
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = glassFieldColors(),
         modifier = modifier
             .fillMaxWidth()
             .let { if (onClick != null) it.clickable(onClick = onClick) else it }

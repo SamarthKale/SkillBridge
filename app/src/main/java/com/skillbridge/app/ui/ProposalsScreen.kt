@@ -1,5 +1,7 @@
 package com.skillbridge.app.ui
 
+import com.skillbridge.app.ui.theme.glassInset
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -151,8 +153,8 @@ private fun ProposalCard(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Smoke, RoundedCornerShape(8.dp))
-                        .padding(8.dp),
+                        .glassInset(RoundedCornerShape(12.dp))
+                        .padding(10.dp),
                     verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
                     rec.reasons.take(2).forEach { reason ->

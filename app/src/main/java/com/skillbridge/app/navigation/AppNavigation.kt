@@ -1,5 +1,17 @@
 package com.skillbridge.app.navigation
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavBackStackEntry
+import com.skillbridge.app.ui.theme.glass
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
@@ -63,6 +75,14 @@ import com.skillbridge.app.ui.theme.Ink
 import com.skillbridge.app.ui.theme.Mute
 import com.skillbridge.app.ui.theme.Paper
 
+private const val PAGE_MS = 320
+private const val TAB_FADE_OUT_MS = 90
+private const val TAB_FADE_IN_MS = 230
+
+/** True when both ends of a navigation are bottom-bar tabs (student or client). */
+private fun isTabSwitch(from: NavBackStackEntry, to: NavBackStackEntry): Boolean =
+    from.destination.route in Routes.BOTTOM_TABS && to.destination.route in Routes.BOTTOM_TABS
+
 @Composable
 fun AppNavigation() {
     val nav = rememberNavController()
@@ -71,7 +91,7 @@ fun AppNavigation() {
     val showBottomBar = currentRoute in Routes.BOTTOM_TABS
 
     Scaffold(
-        containerColor = Paper,
+        containerColor = Color.Transparent, // glass backdrop is drawn once in MainActivity
         bottomBar = { if (showBottomBar) BottomBar(nav, currentRoute) },
         floatingActionButton = {
             if (showBottomBar) {
@@ -88,7 +108,32 @@ fun AppNavigation() {
         NavHost(
             navController = nav,
             startDestination = Routes.SPLASH,
-            modifier = Modifier.padding(inner)
+            modifier = Modifier.padding(inner),
+            // Tab <-> tab: soft cross-fade. Anything else: fade + a small slide in the direction of travel.
+            enterTransition = {
+                if (isTabSwitch(initialState, targetState)) {
+                    fadeIn(tween(TAB_FADE_IN_MS, delayMillis = TAB_FADE_OUT_MS, easing = LinearOutSlowInEasing))
+                } else {
+                    fadeIn(tween(PAGE_MS, easing = FastOutSlowInEasing)) +
+                        slideInHorizontally(tween(PAGE_MS, easing = FastOutSlowInEasing)) { it / 10 }
+                }
+            },
+            exitTransition = {
+                if (isTabSwitch(initialState, targetState)) {
+                    fadeOut(tween(TAB_FADE_OUT_MS))
+                } else {
+                    fadeOut(tween(PAGE_MS * 2 / 3, easing = FastOutSlowInEasing)) +
+                        slideOutHorizontally(tween(PAGE_MS, easing = FastOutSlowInEasing)) { -it / 12 }
+                }
+            },
+            popEnterTransition = {
+                fadeIn(tween(PAGE_MS, easing = FastOutSlowInEasing)) +
+                    slideInHorizontally(tween(PAGE_MS, easing = FastOutSlowInEasing)) { -it / 12 }
+            },
+            popExitTransition = {
+                fadeOut(tween(PAGE_MS * 2 / 3, easing = FastOutSlowInEasing)) +
+                    slideOutHorizontally(tween(PAGE_MS, easing = FastOutSlowInEasing)) { it / 10 }
+            }
         ) {
             composable(Routes.SPLASH) {
                 SplashScreen(onResolved = { route ->
@@ -449,7 +494,12 @@ private fun BottomBar(nav: NavHostController, currentRoute: String?) {
 
     val tabs = if (isClient) clientTabs else studentTabs
 
-    NavigationBar(containerColor = Paper) {
+    // Translucent glass bar with rounded top corners (floats over the backdrop like the mockup).
+    NavigationBar(
+        containerColor = Color.Transparent,
+        tonalElevation = 0.dp,
+        modifier = Modifier.glass(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp), fill = 0.5f, elevation = 16.dp)
+    ) {
         tabs.forEach { tab ->
             NavigationBarItem(
                 selected = currentRoute == tab.route,
@@ -459,7 +509,7 @@ private fun BottomBar(nav: NavHostController, currentRoute: String?) {
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = Accent,
                     selectedTextColor = Accent,
-                    indicatorColor = Paper,
+                    indicatorColor = Color.White.copy(alpha = 0.9f),
                     unselectedIconColor = Mute,
                     unselectedTextColor = Mute
                 )

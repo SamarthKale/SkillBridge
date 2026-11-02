@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- API 27+: also tint the navigation bar to the bottom of the backdrop (SkyBottom)
+         and use dark nav icons so they stay visible on it. -->
+    <style name="Theme.SkillBridge" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">#FFBBD4E8</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">#FFEEF3F8</item>
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
+</resources>

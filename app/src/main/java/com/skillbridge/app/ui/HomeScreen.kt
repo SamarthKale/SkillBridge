@@ -1,5 +1,7 @@
 package com.skillbridge.app.ui
 
+import com.skillbridge.app.ui.theme.glass
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -208,8 +210,7 @@ private fun NearbyBanner(onClick: () -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
-            .background(Paper, RoundedCornerShape(12.dp))
-            .border(1.dp, Line, RoundedCornerShape(12.dp))
+            .glass()
             .clickable(onClick = onClick)
             .padding(14.dp),
         verticalAlignment = Alignment.CenterVertically

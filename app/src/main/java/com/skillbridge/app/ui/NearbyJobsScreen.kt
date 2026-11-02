@@ -1,5 +1,7 @@
 package com.skillbridge.app.ui
 
+import com.skillbridge.app.ui.theme.glass
+
 import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -152,8 +154,7 @@ fun NearbyJobsScreen(
                     Modifier
                         .fillMaxWidth()
                         .height(340.dp)
-                        .background(Paper, RoundedCornerShape(12.dp))
-                        .border(1.dp, Line, RoundedCornerShape(12.dp))
+                        .glass(RoundedCornerShape(20.dp))
                 ) {
                     SkillBridgeMap(
                         modifier = Modifier.fillMaxSize(),
