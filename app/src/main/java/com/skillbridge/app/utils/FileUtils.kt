@@ -52,6 +52,13 @@ object FileUtils {
         null
     }
 
+    /** A fresh cache file URI for the camera app to write a full-size photo into. */
+    fun newCameraUri(context: Context): Uri {
+        val dir = File(context.cacheDir, "photos").apply { mkdirs() }
+        val file = File(dir, "camera.jpg").apply { delete() }
+        return FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+    }
+
     /** Decodes a `data:image/...;base64,` photo value; null for blank values or plain URLs. */
     fun decodePhoto(photo: String): Bitmap? {
         if (!photo.startsWith("data:image")) return null

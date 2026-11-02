@@ -34,7 +34,6 @@ import com.skillbridge.app.data.ResumeFile
 import com.skillbridge.app.data.Skills
 import com.skillbridge.app.ui.components.SecondaryButton
 import com.skillbridge.app.utils.FileUtils
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.TextButton
 import com.skillbridge.app.ui.components.AppTextField
@@ -113,11 +112,18 @@ fun ProfileSetupScreen(
         }
     }
 
-    val photoPicker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (uri != null) {
-            val encoded = FileUtils.encodePhoto(context, uri)
-            if (encoded != null) { photoUrl = encoded; error = null } else error = "Could not read that image."
-        }
+    fun usePhoto(uri: android.net.Uri) {
+        val encoded = FileUtils.encodePhoto(context, uri)
+        if (encoded != null) { photoUrl = encoded; error = null } else error = "Could not read that image."
+    }
+    // The file browser also lists Downloads/Drive, so it works even when the gallery is empty.
+    val photoPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) usePhoto(uri)
+    }
+    var cameraUri by remember { mutableStateOf<android.net.Uri?>(null) }
+    val takePhoto = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { saved ->
+        val uri = cameraUri
+        if (saved && uri != null) usePhoto(uri)
     }
     val resumePicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) {
@@ -218,9 +224,15 @@ fun ProfileSetupScreen(
                 Spacer(Modifier.width(16.dp))
                 Column {
                     SecondaryButton(
-                        if (photoUrl.isBlank()) "Add photo" else "Change photo",
+                        if (photoUrl.isBlank()) "Choose photo" else "Change photo",
+                        onClick = { photoPicker.launch(arrayOf("image/*")) }
+                    )
+                    SecondaryButton(
+                        "Take photo",
                         onClick = {
-                            photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                            val uri = FileUtils.newCameraUri(context)
+                            cameraUri = uri
+                            takePhoto.launch(uri)
                         }
                     )
                     if (photoUrl.isNotBlank()) {

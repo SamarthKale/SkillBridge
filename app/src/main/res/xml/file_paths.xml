@@ -2,4 +2,6 @@
 <paths>
     <!-- Resumes downloaded from Firestore are written here, then opened with ACTION_VIEW. -->
     <cache-path name="resumes" path="resumes/" />
+    <!-- Camera captures for the profile photo are written here before being shrunk. -->
+    <cache-path name="photos" path="photos/" />
 </paths>
