@@ -35,7 +35,7 @@ fun NotificationsScreen(onBack: () -> Unit) {
 
     ScreenScaffold(title = "Notifications", onBack = onBack) { padding ->
         if (notes.isEmpty()) {
-            EmptyState("No notifications yet.")
+            EmptyState("No notifications yet.", Modifier.padding(padding))
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize().padding(padding).padding(horizontal = 20.dp),

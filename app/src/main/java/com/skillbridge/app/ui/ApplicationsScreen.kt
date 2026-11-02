@@ -20,7 +20,7 @@ fun ApplicationsScreen(onOpenApplication: (String) -> Unit) {
 
     ScreenScaffold(title = "My Applications") { padding ->
         if (apps.isEmpty()) {
-            EmptyState("You haven't applied to any projects yet.\nBrowse Explore to get started.")
+            EmptyState("You haven't applied to any projects yet.\nBrowse Explore to get started.", Modifier.padding(padding))
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize().padding(padding).padding(horizontal = 20.dp),

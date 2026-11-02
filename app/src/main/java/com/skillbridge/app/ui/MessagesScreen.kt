@@ -64,7 +64,7 @@ fun MessagesScreen(onOpenConversation: (String) -> Unit) {
         if (loading) {
             Text("Loading...", color = Mute, modifier = Modifier.padding(padding).padding(20.dp))
         } else if (messages.isEmpty()) {
-            EmptyState("No conversations yet.")
+            EmptyState("No conversations yet.", Modifier.padding(padding))
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize().padding(padding).padding(horizontal = 20.dp),
